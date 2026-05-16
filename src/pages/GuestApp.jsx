@@ -55,7 +55,7 @@ export function GuestApp() {
     return () => socket.close();
   }, [step, order?.id]);
 
-  if (!catalog) return <main className="centerScreen">Cargando...</main>;
+  if (!catalog) return <main className="centerScreen">{error || "Cargando..."}</main>;
   if (!catalog.is_guest_open) return <ServiceClosed />;
 
   const updateExtra = (extra, delta) => {

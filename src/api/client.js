@@ -1,4 +1,7 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+const NGROK_BYPASS_HEADERS = API_URL.includes("ngrok-free")
+  ? { "ngrok-skip-browser-warning": "true" }
+  : {};
 
 export const STAFF_LINKS = {
   cook: "/cocina-huaca-7429",
@@ -19,7 +22,7 @@ export function socketUrl(path) {
 
 async function request(path, options = {}) {
   const response = await fetch(`${API_URL}${path}`, {
-    headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+    headers: { "Content-Type": "application/json", ...NGROK_BYPASS_HEADERS, ...(options.headers || {}) },
     ...options,
   });
   if (!response.ok) {

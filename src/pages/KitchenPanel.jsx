@@ -8,7 +8,7 @@ import { OrderSummary } from "../components/OrderSummary";
 import { StaffDashboard } from "../components/StaffDashboard";
 
 export function KitchenPanel() {
-  const { catalog, setCatalog, reload } = useCatalog();
+  const { catalog, setCatalog, error, reload } = useCatalog();
   const [orders, setOrders] = useState([]);
   const [dashboardReport, setDashboardReport] = useState(null);
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
@@ -38,7 +38,7 @@ export function KitchenPanel() {
   }, [date]);
 
   if (!isOpen) return <ServiceClosed />;
-  if (!catalog) return <main className="dashboard">Cargando...</main>;
+  if (!catalog) return <main className="dashboard">{error || "Cargando..."}</main>;
 
   const updateAvailability = async (kind, id, isActive) => {
     try {
