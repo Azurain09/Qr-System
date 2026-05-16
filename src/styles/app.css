@@ -1,0 +1,1708 @@
+:root {
+  color-scheme: light;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f5f7f3;
+  color: #17332c;
+  --green: #1f6f5b;
+  --green-dark: #124638;
+  --mint: #dcefe7;
+  --gold: #c7902d;
+  --ink: #17332c;
+  --muted: #6b7c75;
+  --line: #d9e2dc;
+  --surface: #ffffff;
+  --danger: #b33a32;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+img {
+  max-width: 100%;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.guestShell {
+  max-width: 680px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 18px;
+  background:
+    linear-gradient(180deg, rgba(31, 111, 91, 0.12), transparent 260px),
+    #f5f7f3;
+}
+
+.guestPortal {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #fbfbfd;
+  color: #160b35;
+}
+
+.portalTopbar {
+  min-height: 66px;
+  padding: 10px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  background: linear-gradient(90deg, #08001f, #17003c 62%, #13002d);
+  color: white;
+  box-shadow: 0 2px 12px rgba(10, 0, 36, 0.18);
+}
+
+.portalTitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  font-size: clamp(16px, 2.4vw, 22px);
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.portalIcon {
+  width: 36px;
+  height: 36px;
+  border: 2px solid rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.portalLogo {
+  width: min(210px, 34vw);
+  max-height: 50px;
+  object-fit: contain;
+}
+
+.portalCanvas {
+  flex: 1;
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  padding: 32px 28px 18px;
+}
+
+.portalFooter {
+  width: min(1180px, calc(100% - 56px));
+  margin: 0 auto;
+  min-height: 54px;
+  border-top: 1px solid #e5e4ea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #4e367d;
+  font-weight: 800;
+}
+
+.documentScreen,
+.reviewScreen {
+  display: grid;
+  justify-items: center;
+  gap: 22px;
+}
+
+.loginReferenceScreen {
+  min-height: calc(100vh - 110px);
+  align-items: stretch;
+}
+
+.loginSplitCard {
+  width: min(1380px, 100%);
+  min-height: min(760px, calc(100vh - 120px));
+  border: 1px solid #d9d7e2;
+  border-radius: 18px;
+  display: grid;
+  grid-template-columns: minmax(420px, 0.75fr) minmax(520px, 1.25fr);
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 18px 42px rgba(20, 8, 55, 0.09);
+}
+
+.loginPane {
+  padding: clamp(34px, 5vw, 72px);
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 18px;
+  text-align: center;
+}
+
+.loginLogoLarge {
+  width: min(390px, 76%);
+  object-fit: contain;
+}
+
+.loginPane h1 {
+  margin: 10px 0 0;
+  color: #170b37;
+  font-size: 30px;
+}
+
+.loginPane > p {
+  margin: 0 0 10px;
+  color: #626070;
+  font-size: 18px;
+}
+
+.loginInput {
+  width: min(520px, 100%);
+}
+
+.loginButton {
+  width: min(520px, 100%);
+  background: #31006f;
+  box-shadow: 0 10px 20px rgba(49, 0, 111, 0.2);
+}
+
+.loginButton:hover {
+  background: #23004f;
+}
+
+.loginPane .portalInfo {
+  width: min(520px, 100%);
+  grid-template-columns: auto 1fr;
+  text-align: left;
+}
+
+.loginPane .portalInfo p {
+  grid-column: 1 / -1;
+}
+
+.loginCopyright {
+  width: min(520px, 100%);
+  margin-top: 14px;
+  border-top: 1px solid #e4e1ea;
+  padding-top: 22px;
+  color: #686474;
+  font-size: 15px;
+}
+
+.loginHotelImage {
+  width: 100%;
+  height: 100%;
+  min-height: 560px;
+  object-fit: cover;
+}
+
+.documentCard {
+  width: min(760px, 100%);
+  border: 1px solid #e3e2e9;
+  border-radius: 8px;
+  padding: 28px 34px 30px;
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  background: white;
+  box-shadow: 0 18px 42px rgba(20, 8, 55, 0.07);
+  text-align: center;
+}
+
+.compactCard {
+  max-width: 680px;
+  text-align: left;
+  justify-items: stretch;
+}
+
+.documentIcon {
+  width: 76px;
+  height: 76px;
+  margin-top: -60px;
+  border: 2px solid #d5cce6;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #fbf9ff;
+  color: #25144d;
+}
+
+.hotelPreview {
+  width: min(360px, 82vw);
+  max-height: 180px;
+  object-fit: contain;
+}
+
+.documentCard h1,
+.portalHeading h1 {
+  margin: 0;
+  color: #170b37;
+  font-size: clamp(24px, 4vw, 34px);
+  line-height: 1.12;
+}
+
+.documentCard p,
+.portalHeading p,
+.documentCard > span,
+.hintText {
+  margin: 0;
+  color: #59606f;
+  font-weight: 700;
+}
+
+.documentInput {
+  width: min(590px, 100%);
+  min-height: 58px;
+  border: 1px solid #dfe1e8;
+  border-radius: 8px;
+  padding: 0 16px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 12px;
+  color: #59606f;
+}
+
+.documentInput input {
+  border: 0;
+  padding: 0;
+  min-height: 54px;
+  font-size: 17px;
+  outline: none;
+}
+
+.portalPrimary {
+  min-height: 54px;
+  border: 0;
+  border-radius: 6px;
+  padding: 0 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #e18600;
+  color: white;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(225, 134, 0, 0.22);
+}
+
+.portalPrimary:hover {
+  background: #c97900;
+}
+
+.portalInfo {
+  width: min(760px, 100%);
+  border: 1px solid #f5dba8;
+  border-radius: 8px;
+  padding: 16px 22px;
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: 14px;
+  background: #fff6df;
+  color: #3f3746;
+}
+
+.portalInfo span {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #d48400;
+  color: white;
+}
+
+.portalInfo strong {
+  color: #d48400;
+}
+
+.portalInfo p {
+  margin: 0;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.portalAlert {
+  width: min(760px, 100%);
+}
+
+.portalHeading {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.locationScreen,
+.breakfastScreen {
+  width: 100%;
+}
+
+.guestDetailsCard,
+.eggPrepPanel,
+.extrasPanel {
+  width: min(780px, 100%);
+  margin: 0 auto 22px;
+  border: 1px solid #e5e4ea;
+  border-radius: 8px;
+  padding: 18px;
+  background: white;
+}
+
+.locationCards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 38px;
+  width: min(760px, 100%);
+  margin: 0 auto 30px;
+}
+
+.locationCard {
+  min-height: 260px;
+  border: 2px solid #e5e4ea;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  background: white;
+  color: #170b37;
+  text-align: center;
+  cursor: pointer;
+}
+
+.locationCard span {
+  width: 126px;
+  height: 126px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: white;
+}
+
+.locationCard.restaurant span {
+  background: #ff8a00;
+}
+
+.locationCard.room span {
+  background: #06943d;
+}
+
+.locationCard.restaurant.selected {
+  border-color: #ff8a00;
+}
+
+.locationCard.room.selected {
+  border-color: #08a846;
+}
+
+.locationCard strong {
+  font-size: 26px;
+  font-weight: 900;
+}
+
+.locationCard p {
+  max-width: 210px;
+  margin: 0;
+  color: #59606f;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.locationDetailPanel {
+  width: min(1040px, 100%);
+  margin: 0 auto 24px;
+  border: 1px solid #e5e4ea;
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: minmax(320px, 0.9fr) minmax(320px, 1.1fr);
+  overflow: hidden;
+  background: white;
+}
+
+.locationDetailCopy {
+  padding: 36px;
+  display: grid;
+  align-content: center;
+  gap: 14px;
+}
+
+.locationDetailCopy h2 {
+  position: relative;
+  margin: 0 0 14px;
+  color: #170b37;
+  font-size: 28px;
+}
+
+.locationDetailCopy h2::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -10px;
+  width: 52px;
+  height: 2px;
+  background: #e18600;
+}
+
+.locationPhoto {
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+  object-fit: cover;
+}
+
+.portalNav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  width: min(1040px, 100%);
+  margin: 0 auto;
+}
+
+.portalNav.inline {
+  width: 100%;
+  margin-top: 18px;
+}
+
+.portalBack {
+  min-height: 44px;
+  border: 1px solid #dfe1e8;
+  border-radius: 6px;
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  color: #4c5060;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.navPrimary {
+  min-width: 210px;
+  background: #170052;
+  box-shadow: none;
+}
+
+.navPrimary:hover {
+  background: #25106f;
+}
+
+.guestContext {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.guestContext span {
+  min-height: 58px;
+  border: 1px solid #ebe9ef;
+  border-radius: 6px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fbfaff;
+  color: #4e367d;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.breakfastCards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.breakfastCard {
+  border: 1px solid #e2e2e9;
+  border-radius: 8px;
+  padding: 0;
+  overflow: hidden;
+  background: white;
+  color: #170b37;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 12px 26px rgba(19, 0, 45, 0.06);
+}
+
+.breakfastCard.selected {
+  border-color: #2ba766;
+  box-shadow: 0 0 0 2px rgba(43, 167, 102, 0.16), 0 12px 26px rgba(19, 0, 45, 0.06);
+}
+
+.breakfastCard img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+}
+
+.breakfastCard div {
+  position: relative;
+  min-height: 150px;
+  padding: 18px 18px 34px;
+}
+
+.breakfastCard strong {
+  color: #e07900;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.breakfastCard:nth-child(2) strong {
+  color: #16a057;
+}
+
+.breakfastCard:nth-child(3) strong {
+  color: #1e91ff;
+}
+
+.breakfastCard p {
+  margin: 8px 0 0;
+  color: #252338;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.breakfastCard i {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #e07900;
+  border-radius: 999px;
+  transform: translateX(-50%);
+}
+
+.breakfastCard.selected i {
+  background: currentColor;
+}
+
+.extrasPanel {
+  width: 100%;
+  margin-bottom: 22px;
+}
+
+.floatingCountdown {
+  position: fixed;
+  top: 78px;
+  left: 18px;
+  z-index: 10;
+  border-radius: 8px;
+  padding: 10px 14px;
+  background: #170052;
+  color: white;
+  font-weight: 900;
+  box-shadow: 0 12px 28px rgba(23, 0, 82, 0.22);
+}
+
+.portalStatus {
+  margin-bottom: 18px;
+}
+
+.purgePanel {
+  margin-top: 16px;
+  border: 1px solid #f0c7c1;
+  border-radius: 8px;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(240px, 320px) auto;
+  align-items: end;
+  gap: 14px;
+  background: #fff7f5;
+}
+
+.purgePanel h2 {
+  margin-bottom: 6px;
+  color: var(--danger);
+}
+
+.purgePanel p {
+  margin: 0;
+  color: #6b4a45;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.purgePanel .field {
+  margin-bottom: 0;
+}
+
+.purgeButton {
+  width: auto;
+}
+
+.danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.guestHeader,
+.dashboardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.guestHeader p,
+.dashboardHeader p {
+  margin: 0;
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+.guestHeader h1,
+.dashboardHeader h1 {
+  margin: 2px 0 0;
+  font-size: clamp(28px, 6vw, 44px);
+  letter-spacing: 0;
+}
+
+.countdown {
+  min-width: 72px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--green-dark);
+  color: white;
+  text-align: center;
+  font-weight: 900;
+}
+
+.panel,
+.notice,
+.orderCard,
+.chart,
+.metric,
+.staffPanel,
+.availability {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgba(23, 51, 44, 0.08);
+}
+
+.panel {
+  padding: 18px;
+}
+
+.panel h2 {
+  margin-bottom: 14px;
+  font-size: 22px;
+}
+
+.field {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 14px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+input,
+select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: white;
+  color: var(--ink);
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin: 12px 0 14px;
+}
+
+.segmented button,
+.statusButtons button {
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8faf7;
+  color: var(--ink);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.segmented .active,
+.statusButtons .active {
+  border-color: var(--green);
+  background: var(--mint);
+  color: var(--green-dark);
+}
+
+.checkRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0 18px;
+  font-weight: 800;
+}
+
+.checkRow input {
+  width: 18px;
+  min-height: 18px;
+}
+
+.small {
+  margin: 0;
+  font-size: 13px;
+}
+
+.primary,
+.secondary,
+.danger,
+.linkButton {
+  min-height: 44px;
+  border: 0;
+  border-radius: 8px;
+  padding: 11px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 900;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.primary {
+  width: 100%;
+  background: var(--green);
+  color: white;
+}
+
+.secondary {
+  background: #edf3ef;
+  color: var(--green-dark);
+}
+
+.danger {
+  background: var(--danger);
+  color: white;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.breakfastGrid {
+  display: grid;
+  gap: 10px;
+}
+
+.breakfastOption {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: #fbfcfa;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.breakfastOption strong,
+.breakfastOption span {
+  display: block;
+}
+
+.breakfastOption span {
+  margin-top: 5px;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.breakfastOption.selected {
+  border-color: var(--green);
+  background: var(--mint);
+}
+
+.extraGroup {
+  margin-top: 16px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.extraGroup h3 {
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.extraRow {
+  display: grid;
+  grid-template-columns: 1fr minmax(92px, auto);
+  align-items: center;
+  gap: 8px;
+  padding: 9px 0;
+  border-bottom: 1px solid #edf1ee;
+}
+
+.extraRow select {
+  grid-column: 1 / -1;
+}
+
+.qty,
+.statusButtons,
+.linkStack {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.iconButton {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: white;
+  color: var(--green-dark);
+  cursor: pointer;
+}
+
+.alert {
+  margin-bottom: 14px;
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: #fff1df;
+  color: #8b4d00;
+  font-weight: 800;
+}
+
+.summary {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+}
+
+.summary p {
+  margin: 0;
+}
+
+.summary b {
+  color: var(--ink);
+}
+
+.summary ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+.included {
+  width: fit-content;
+  border-radius: 8px;
+  padding: 6px 9px;
+  background: #fff1c9;
+  color: #86600e;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.statusTrack {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.statusTrack span {
+  border-left: 4px solid var(--line);
+  padding: 8px 12px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.statusTrack .done {
+  border-color: var(--green);
+  color: var(--green-dark);
+  background: var(--mint);
+}
+
+.centerScreen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.notice {
+  max-width: 480px;
+  padding: 28px;
+  text-align: center;
+}
+
+.notice svg {
+  color: var(--green);
+}
+
+.dashboard {
+  min-height: 100vh;
+  padding: 0;
+  background: #fbfbfd;
+}
+
+.staffTopbar {
+  min-height: 66px;
+  padding: 10px 7vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  background: linear-gradient(90deg, #08001f, #17003c 62%, #13002d);
+  color: white;
+  box-shadow: 0 2px 12px rgba(10, 0, 36, 0.18);
+}
+
+.staffIntro,
+.dashboardGrid,
+.reportToolbar,
+.staffDashboard,
+.dailySnapshot,
+.purgePanel {
+  width: min(1220px, calc(100% - 48px));
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.staffIntro {
+  margin-top: 20px;
+  margin-bottom: 14px;
+}
+
+.staffIntro h1 {
+  margin: 0;
+  color: #160b35;
+  font-size: 30px;
+}
+
+.staffIntro p {
+  margin: 4px 0 0;
+  color: #59606f;
+  font-weight: 700;
+}
+
+.dashboardHeader {
+  justify-content: flex-start;
+}
+
+.dashboardHeader h1 {
+  font-size: 34px;
+}
+
+.dashboardHeader span,
+.muted {
+  color: var(--muted);
+}
+
+.brandMark {
+  width: 54px;
+  height: 54px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: var(--green);
+  color: white;
+}
+
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 20px;
+  align-items: start;
+  padding-bottom: 24px;
+  margin-top: 16px;
+}
+
+.orderList {
+  display: grid;
+  gap: 14px;
+}
+
+.orderCard {
+  padding: 16px;
+}
+
+.orderTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.orderTop h3 {
+  margin-bottom: 4px;
+}
+
+.orderTop p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.statusButtons {
+  flex-wrap: wrap;
+  margin: 14px 0;
+}
+
+.statusButtons button {
+  padding: 0 12px;
+}
+
+.cancelLine {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.compact {
+  grid-template-columns: 1fr 220px;
+  padding-top: 8px;
+  border-top: 1px solid #edf1ee;
+}
+
+.availability {
+  position: sticky;
+  top: 18px;
+  padding: 16px;
+  max-height: calc(100vh - 36px);
+  overflow: auto;
+}
+
+.toggleGroup {
+  margin-top: 14px;
+}
+
+.toggleGroup h3 {
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+
+.toggleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #edf1ee;
+}
+
+.toggleRow input {
+  width: 20px;
+  min-height: 20px;
+}
+
+.emptyState {
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  padding: 24px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.reportToolbar {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.reportToolbar .field {
+  margin: 0;
+}
+
+.linkButton {
+  width: auto;
+}
+
+.reportGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.staffDashboard {
+  display: grid;
+  gap: 16px;
+}
+
+.statCards {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.statCard,
+.staffPanelCard {
+  border: 1px solid #e7e6ee;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 12px 26px rgba(17, 6, 52, 0.05);
+}
+
+.statCard {
+  min-height: 134px;
+  padding: 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.statCard > span {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.statCard svg {
+  width: 28px;
+  height: 28px;
+}
+
+.statCard.purple > span {
+  color: #5b1fd1;
+  background: #eee6ff;
+}
+
+.statCard.green > span {
+  color: #16a34a;
+  background: #dcfce7;
+}
+
+.statCard.orange > span {
+  color: #ff7a00;
+  background: #ffedd5;
+}
+
+.statCard.red > span {
+  color: #ef4444;
+  background: #fee2e2;
+}
+
+.statCard.blue > span {
+  color: #1479f6;
+  background: #dbeafe;
+}
+
+.statCard p {
+  margin: 0 0 6px;
+  color: #232040;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.statCard strong {
+  display: block;
+  color: #13072e;
+  font-size: 30px;
+  line-height: 1;
+}
+
+.statCard small {
+  display: block;
+  margin-top: 12px;
+  color: #59606f;
+  font-weight: 800;
+}
+
+.staffCharts {
+  display: grid;
+  grid-template-columns: 1.05fr 1.2fr 1.35fr;
+  gap: 16px;
+}
+
+.staffPanelCard {
+  min-height: 260px;
+  padding: 18px;
+}
+
+.staffPanelCard h2,
+.dailySnapshot h2 {
+  margin: 0 0 16px;
+  color: #181138;
+  font-size: 18px;
+}
+
+.pieWrap {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  align-items: center;
+  gap: 18px;
+}
+
+.pieChart {
+  width: 150px;
+  height: 150px;
+  border-radius: 999px;
+}
+
+.pieLegend {
+  display: grid;
+  gap: 12px;
+}
+
+.pieLegend span,
+.groupLegend span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #37324f;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.pieLegend i,
+.groupLegend i {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.pieLegend b {
+  margin-left: auto;
+}
+
+.groupLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.greenDot,
+.greenBar {
+  background: #23b14d;
+}
+
+.blueDot,
+.blueBar {
+  background: #1479f6;
+}
+
+.redDot,
+.redBar {
+  background: #f43f5e;
+}
+
+.groupedBars {
+  height: 180px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+
+.groupedBar {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.groupedBar div {
+  height: 145px;
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  gap: 5px;
+  border-bottom: 1px solid #e7e6ee;
+}
+
+.groupedBar i {
+  width: 12px;
+  min-height: 3px;
+  border-radius: 3px 3px 0 0;
+}
+
+.groupedBar span,
+.linePoint span {
+  color: #37324f;
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.lineChart {
+  height: 202px;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 10px;
+  align-items: end;
+  border-left: 1px solid #eceaf2;
+  border-bottom: 1px solid #eceaf2;
+  padding: 8px 10px 0;
+}
+
+.linePoint {
+  height: 100%;
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  justify-items: center;
+  align-items: end;
+}
+
+.linePoint b {
+  align-self: end;
+  margin-bottom: calc(var(--height) - 20%);
+  color: #3d20b9;
+  font-size: 12px;
+}
+
+.linePoint i {
+  width: 10px;
+  height: 10px;
+  margin-bottom: var(--height);
+  border-radius: 999px;
+  background: #5b1fd1;
+  box-shadow: 0 0 0 5px rgba(91, 31, 209, 0.12);
+}
+
+.rankTable table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.rankTable th,
+.rankTable td {
+  padding: 10px 6px;
+  border-bottom: 1px solid #efedf4;
+  text-align: left;
+}
+
+.rankTable th {
+  color: #312a50;
+  font-weight: 900;
+}
+
+.rankTable td {
+  color: #37324f;
+  font-weight: 750;
+}
+
+.dailySnapshot {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.compactReport {
+  grid-template-columns: 0.7fr 1fr 1fr;
+}
+
+.metric,
+.chart,
+.staffPanel {
+  padding: 16px;
+}
+
+.metric span {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.metric strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 42px;
+}
+
+.chart h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+}
+
+.barRow {
+  display: grid;
+  grid-template-columns: 110px 1fr 34px;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+.barRow div {
+  height: 10px;
+  border-radius: 999px;
+  background: #edf1ee;
+  overflow: hidden;
+}
+
+.barRow i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--green);
+}
+
+.staffPanel {
+  margin-top: 16px;
+}
+
+.staffForm {
+  display: grid;
+  grid-template-columns: 1fr 140px 160px 90px auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.staffForm .primary {
+  width: auto;
+}
+
+.staffList {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.staffRow {
+  display: grid;
+  grid-template-columns: 1fr 150px 90px;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  background: white;
+  text-align: left;
+  cursor: pointer;
+}
+
+.staffRow em {
+  color: var(--muted);
+  font-style: normal;
+}
+
+.linkStack {
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.linkStack a {
+  color: var(--green-dark);
+  font-weight: 900;
+}
+
+@media (max-width: 980px) {
+  .dashboardGrid,
+  .reportGrid,
+  .statCards,
+  .staffCharts,
+  .compactReport {
+    grid-template-columns: 1fr;
+  }
+
+  .locationDetailPanel,
+  .guestContext,
+  .breakfastCards,
+  .purgePanel {
+    grid-template-columns: 1fr;
+  }
+
+  .loginSplitCard {
+    grid-template-columns: 1fr;
+  }
+
+  .loginHotelImage {
+    min-height: 360px;
+    order: -1;
+  }
+
+  .availability {
+    position: static;
+    max-height: none;
+  }
+
+  .staffForm {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .portalTopbar {
+    min-height: 58px;
+    padding: 8px 14px;
+  }
+
+  .portalTitle {
+    font-size: 14px;
+  }
+
+  .portalIcon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .portalLogo {
+    width: 138px;
+  }
+
+  .portalCanvas {
+    padding: 28px 14px 14px;
+  }
+
+  .portalFooter {
+    width: calc(100% - 28px);
+  }
+
+  .documentCard {
+    padding: 24px 18px;
+  }
+
+  .loginReferenceScreen {
+    min-height: auto;
+  }
+
+  .loginSplitCard {
+    min-height: 0;
+    border-radius: 12px;
+  }
+
+  .loginPane {
+    padding: 26px 18px;
+  }
+
+  .loginLogoLarge {
+    width: min(280px, 82%);
+  }
+
+  .loginHotelImage {
+    min-height: 250px;
+  }
+
+  .documentIcon {
+    width: 64px;
+    height: 64px;
+    margin-top: -48px;
+  }
+
+  .portalInfo {
+    grid-template-columns: auto 1fr;
+  }
+
+  .portalInfo p {
+    grid-column: 1 / -1;
+  }
+
+  .locationCards {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .locationCard {
+    min-height: 210px;
+  }
+
+  .locationDetailCopy {
+    padding: 24px 18px;
+  }
+
+  .locationPhoto {
+    min-height: 260px;
+  }
+
+  .portalNav {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .navPrimary,
+  .portalBack {
+    width: 100%;
+  }
+
+  .dashboard {
+    padding: 0;
+  }
+
+  .staffTopbar {
+    min-height: 58px;
+    padding: 8px 14px;
+  }
+
+  .staffIntro,
+  .dashboardGrid,
+  .reportToolbar,
+  .staffDashboard,
+  .dailySnapshot,
+  .purgePanel {
+    width: calc(100% - 28px);
+  }
+
+  .panel {
+    padding: 16px;
+  }
+
+  .actions,
+  .cancelLine,
+  .compact,
+  .reportToolbar,
+  .staffRow {
+    grid-template-columns: 1fr;
+  }
+
+  .reportToolbar {
+    display: grid;
+  }
+
+  .primary,
+  .secondary,
+  .danger,
+  .linkButton {
+    width: 100%;
+  }
+
+  .orderTop {
+    display: grid;
+  }
+
+  .barRow {
+    grid-template-columns: 86px 1fr 28px;
+  }
+
+  .pieWrap {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .lineChart {
+    overflow-x: auto;
+  }
+}
