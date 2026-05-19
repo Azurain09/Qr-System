@@ -347,7 +347,7 @@ export function GuestApp() {
 
   if (step === "document") {
     return (
-      <GuestChrome title="1. INICIO DE SESION" icon={<Users size={21} />} footer={false}>
+      <GuestChrome title="1. INICIO DE SESION" icon={<Users size={21} />} footer={false} className="loginPortal">
         <section className="documentScreen loginReferenceScreen">
           {sharedMessages}
           <div className="loginSplitCard">
