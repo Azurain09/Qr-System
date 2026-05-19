@@ -14,6 +14,28 @@ export const BREAKFAST_IMAGES = {
   Continental: `${ASSET_BASE}/Continental.png`,
   Dietetico: `${ASSET_BASE}/Dietetico.png`,
 };
+export const EGG_IMAGES = {
+  Fritos: `${ASSET_BASE}/egg-fritos.png`,
+  Hervidos: `${ASSET_BASE}/egg-hervidos.png`,
+  Revueltos: `${ASSET_BASE}/egg-revueltos.png`,
+  Escalfados: `${ASSET_BASE}/egg-escalfados.png`,
+};
+export const EGG_DESCRIPTIONS = {
+  Fritos: "Huevos fritos en aceite o mantequilla.",
+  Hervidos: "Huevos cocidos en agua hasta la coccion deseada.",
+  Revueltos: "Huevos batidos y cocidos a fuego lento.",
+  Escalfados: "Huevos cocidos en agua sin cascara.",
+};
+export const JUICE_OPTIONS = [
+  { name: "Naranja", image: `${ASSET_BASE}/juice-naranja.png`, color: "orange" },
+  { name: "Pina", image: `${ASSET_BASE}/juice-pina.png`, color: "orange" },
+  { name: "Papaya", image: `${ASSET_BASE}/juice-papaya.png`, color: "orange" },
+  { name: "Guayaba", image: `${ASSET_BASE}/juice-guayaba.png`, color: "orange" },
+];
+export const COFFEE_OPTIONS = [
+  { name: "Cafe Negro", image: `${ASSET_BASE}/coffee-negro.png`, color: "purple" },
+  { name: "Cafe con Leche", image: `${ASSET_BASE}/coffee-leche.png`, color: "purple" },
+];
 export const PURGE_CONFIRMATION = "ELIMINAR PEDIDOS";
 
 export const INCLUDED_ITEMS = [

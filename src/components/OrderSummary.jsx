@@ -4,6 +4,7 @@ import { EXTRA_PRICES, INCLUDED_ITEMS } from "../constants/app";
 export function OrderSummary({ order }) {
   const activeExtras = order.extras?.filter((extra) => !extra.is_cancelled) || [];
   const extraTotal = activeExtras.reduce((total, extra) => total + (EXTRA_PRICES[extra.name] || 0) * extra.quantity, 0);
+  const includedDrinks = order.included_drinks || {};
 
   return (
     <div className="summary">
@@ -15,7 +16,10 @@ export function OrderSummary({ order }) {
       <div className="summaryBlock">
         <b>Incluido sin costo adicional</b>
         <ul>
-          {INCLUDED_ITEMS.map((item) => <li key={item.name}>{item.quantity} x {item.name}</li>)}
+          {INCLUDED_ITEMS.map((item) => {
+            const selected = item.name === "Jugo" ? includedDrinks.juice : includedDrinks.coffee;
+            return <li key={item.name}>{item.quantity} x {selected || item.name}</li>;
+          })}
         </ul>
       </div>
       {activeExtras.length > 0 && (
