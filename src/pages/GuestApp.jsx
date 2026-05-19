@@ -295,11 +295,11 @@ export function GuestApp() {
 
   const contextStrip = (
     <div className="guestContext referenceContext">
-      <span><Users size={25} /><b>Huesped:</b> {draft.full_name || order?.guest_name}</span>
-      <span><DoorOpen size={26} /><b>{draft.delivery_location === "Habitacion" ? "Habitacion:" : "Mesa:"}</b> {draft.delivery_location === "Habitacion" ? (draft.room_number || order?.room_number || "-") : (draft.table_number || order?.table_number || "-")}</span>
-      <span><Users size={25} /><b>Personas registradas:</b> 2</span>
-      {selectedBreakfast && <span><EggFried size={25} /><b>Desayuno seleccionado:</b> {selectedBreakfast.name}</span>}
-      {selectedEgg && <span><Coffee size={25} /><b>Preparacion de huevos:</b> {selectedEgg.name}</span>}
+      <span><Users size={25} /><b>Huesped:</b><strong>{draft.full_name || order?.guest_name}</strong></span>
+      <span><DoorOpen size={26} /><b>{draft.delivery_location === "Habitacion" ? "Habitacion:" : "Mesa:"}</b><strong>{draft.delivery_location === "Habitacion" ? (draft.room_number || order?.room_number || "-") : (draft.table_number || order?.table_number || "-")}</strong></span>
+      <span><Users size={25} /><b>Personas registradas:</b><strong>2</strong></span>
+      {selectedBreakfast && <span><EggFried size={25} /><b>Desayuno seleccionado:</b><strong>{selectedBreakfast.name}</strong></span>}
+      {selectedEgg && <span><Coffee size={25} /><b>Preparacion de huevos:</b><strong>{selectedEgg.name}</strong></span>}
     </div>
   );
 
@@ -651,7 +651,7 @@ export function GuestApp() {
                 <div className="statusTrack portalStatus">
                   {STATUS_FLOW.map((status) => <span key={status} className={STATUS_FLOW.indexOf(order.status) >= STATUS_FLOW.indexOf(status) ? "done" : ""}>{status}</span>)}
                 </div>
-                {order.status === "Entregado" && <p className="deliveredThanks">Su pedido fue entregado muchas gracias</p>}
+                {order.status === "Entregado" && <p className="deliveredThanks">Su desayuno ha sido entregado. ¡Buen provecho!</p>}
               </>
             )}
             <OrderSummary order={displayOrder} />
