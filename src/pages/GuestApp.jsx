@@ -1,37 +1,69 @@
-import React, { useEffect, useState } from "react";
-import { ArrowRight, Bed, ChefHat, ClipboardList, IdCard, MapPin, Minus, Plus, Users, Utensils } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
+import { ArrowRight, Bed, ChefHat, ClipboardList, Coffee, EggFried, IdCard, MapPin, Minus, Plus, Users, Utensils } from "lucide-react";
 import { api, socketUrl } from "../api/client";
-import { ASSET_BASE, BREAKFAST_IMAGES, STATUS_FLOW } from "../constants/app";
+import { ASSET_BASE, BREAKFAST_IMAGES, EXTRA_PRICES, STATUS_FLOW } from "../constants/app";
 import { useCatalog } from "../hooks/useCatalog";
 import { BackButton, Field, GuestChrome, PortalInfo, QuantityButton, ServiceClosed } from "../components/ui";
 import { OrderSummary } from "../components/OrderSummary";
 
+const STORAGE_KEY = "hotel_guest_order_session";
 const onlyDigits = (value, maxLength) => value.replace(/\D/g, "").slice(0, maxLength);
+
+const initialDraft = {
+  document: "",
+  full_name: "",
+  delivery_location: "Restaurante",
+  table_number: "",
+  room_number: "",
+  claimed_included: true,
+  breakfast_type_id: "",
+  egg_prep_type_id: "",
+  extras: [],
+};
+
+function readStoredSession() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
 
 export function GuestApp() {
   const { catalog, error } = useCatalog();
-  const [step, setStep] = useState("document");
+  const stored = useMemo(readStoredSession, []);
+  const [step, setStep] = useState(stored.step || "document");
   const [message, setMessage] = useState("");
-  const [draft, setDraft] = useState({
-    document: "",
-    full_name: "",
-    delivery_location: "Restaurante",
-    table_number: "",
-    room_number: "",
-    claimed_included: true,
-    breakfast_type_id: "",
-    egg_prep_type_id: "",
-    extras: [],
-  });
+  const [draft, setDraft] = useState({ ...initialDraft, ...(stored.draft || {}) });
   const [order, setOrder] = useState(null);
   const [secondsLeft, setSecondsLeft] = useState(0);
+  const [addingExtras, setAddingExtras] = useState(false);
 
   const activeBreakfasts = catalog?.breakfast_types.filter((item) => item.is_active) || [];
   const activeEggs = catalog?.egg_prep_types.filter((item) => item.is_active) || [];
+  const allExtras = catalog?.extra_categories.flatMap((category) => category.extras) || [];
   const selectedBreakfast = activeBreakfasts.find((item) => item.id === Number(draft.breakfast_type_id));
 
   useEffect(() => {
-    if (step !== "review" || !order) return;
+    const restoreOrder = async () => {
+      if (!stored.orderId) return;
+      try {
+        const data = await api.getOrder(stored.orderId);
+        setOrder(data);
+        setStep(data.confirmed_at ? "status" : "review");
+      } catch {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    };
+    restoreOrder();
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ draft, orderId: order?.id || null, step }));
+  }, [draft, order?.id, step]);
+
+  useEffect(() => {
+    if (step !== "review" || !order || order.confirmed_at) return;
     const timer = setInterval(() => {
       const left = Math.max(0, Math.floor((new Date(order.expires_at).getTime() - Date.now()) / 1000));
       setSecondsLeft(left);
@@ -40,20 +72,32 @@ export function GuestApp() {
         setOrder(null);
         setStep("document");
         setMessage("El pedido expiro. Puedes empezar nuevamente.");
+        localStorage.removeItem(STORAGE_KEY);
       }
     }, 1000);
     return () => clearInterval(timer);
   }, [step, order]);
 
   useEffect(() => {
-    if (step !== "status" || !order?.id) return;
+    if (!order?.id) return;
+    const refreshOrder = async () => {
+      try {
+        setOrder(await api.getOrder(order.id));
+      } catch {
+        // The WebSocket or next poll will retry.
+      }
+    };
     const socket = new WebSocket(socketUrl(`/ws/orders/${order.id}`));
     socket.onmessage = (event) => {
       const payload = JSON.parse(event.data);
       if (payload.order) setOrder(payload.order);
     };
-    return () => socket.close();
-  }, [step, order?.id]);
+    const poll = setInterval(refreshOrder, 8000);
+    return () => {
+      socket.close();
+      clearInterval(poll);
+    };
+  }, [order?.id]);
 
   if (!catalog) return <main className="centerScreen">{error || "Cargando..."}</main>;
   if (!catalog.is_guest_open) return <ServiceClosed />;
@@ -87,7 +131,7 @@ export function GuestApp() {
       const data = await api.getOrderByDocument(draft.document);
       if (data.order) {
         setOrder(data.order);
-        setStep(data.order.status === "Borrador" ? "review" : "status");
+        setStep(data.order.confirmed_at ? "status" : "review");
       } else {
         setStep("identity");
       }
@@ -103,25 +147,30 @@ export function GuestApp() {
   };
 
   const validateLocationDetail = () => {
-    if (draft.delivery_location === "Restaurante" && !["1", "2", "3", "4", "5", "6", "7"].includes(draft.table_number)) {
-      return "Completar todos los campos";
-    }
+    if (draft.delivery_location === "Restaurante" && !["1", "2", "3", "4", "5", "6", "7"].includes(draft.table_number)) return "Completar todos los campos";
     if (draft.delivery_location === "Habitacion" && !/^\d{3}$/.test(draft.room_number)) return "Completar todos los campos";
     return "";
   };
 
-  const validateMenu = () => {
-    if (!draft.breakfast_type_id) return "Completar todos los campos";
-    if (selectedBreakfast?.has_eggs && !draft.egg_prep_type_id) return "Completar todos los campos";
-    const selectedExtras = draft.extras
-      .map((item) => ({ ...item, extra: catalog.extra_categories.flatMap((category) => category.extras).find((extra) => extra.id === item.extra_id) }))
+  const validateExtras = () => {
+    const missingEggPrep = draft.extras
+      .map((item) => ({ ...item, extra: allExtras.find((extra) => extra.id === item.extra_id) }))
       .filter((item) => item.extra?.requires_egg_prep && !item.egg_prep_type_id);
-    if (selectedExtras.length) return "Completar todos los campos";
-    return "";
+    return missingEggPrep.length ? "Completar todos los campos" : "";
   };
 
+  const buildExtrasPayload = () => draft.extras.map((item) => ({
+    extra_id: item.extra_id,
+    quantity: item.quantity,
+    egg_prep_type_id: item.egg_prep_type_id ? Number(item.egg_prep_type_id) : null,
+  }));
+
   const submitDraft = async () => {
-    const validation = validateMenu();
+    if (!draft.breakfast_type_id || (selectedBreakfast?.has_eggs && !draft.egg_prep_type_id)) {
+      setMessage("Completar todos los campos");
+      return;
+    }
+    const validation = validateExtras();
     if (validation) {
       setMessage(validation);
       return;
@@ -133,15 +182,33 @@ export function GuestApp() {
         room_number: draft.delivery_location === "Habitacion" ? draft.room_number : null,
         breakfast_type_id: Number(draft.breakfast_type_id),
         egg_prep_type_id: draft.egg_prep_type_id ? Number(draft.egg_prep_type_id) : null,
-        extras: draft.extras.map((item) => ({
-          extra_id: item.extra_id,
-          quantity: item.quantity,
-          egg_prep_type_id: item.egg_prep_type_id ? Number(item.egg_prep_type_id) : null,
-        })),
+        extras: buildExtrasPayload(),
       };
       const created = await api.createOrder(payload);
       setOrder(created);
       setStep("review");
+      setMessage("");
+    } catch (err) {
+      setMessage(err.message);
+    }
+  };
+
+  const submitMoreExtras = async () => {
+    const validation = validateExtras();
+    if (validation) {
+      setMessage(validation);
+      return;
+    }
+    if (!draft.extras.length) {
+      setStep("status");
+      return;
+    }
+    try {
+      const updated = await api.addOrderExtras(order.id, buildExtrasPayload());
+      setOrder(updated);
+      setDraft((current) => ({ ...current, extras: [] }));
+      setAddingExtras(false);
+      setStep("status");
       setMessage("");
     } catch (err) {
       setMessage(err.message);
@@ -167,10 +234,11 @@ export function GuestApp() {
     table_number: draft.table_number,
     room_number: draft.room_number,
     claimed_included: draft.claimed_included,
+    status: "Pendiente",
     breakfast_type: selectedBreakfast?.name,
     egg_prep: activeEggs.find((egg) => egg.id === Number(draft.egg_prep_type_id))?.name,
     extras: draft.extras.map((item) => {
-      const extra = catalog.extra_categories.flatMap((category) => category.extras).find((entry) => entry.id === item.extra_id);
+      const extra = allExtras.find((entry) => entry.id === item.extra_id);
       return {
         id: item.extra_id,
         name: extra?.name,
@@ -188,6 +256,64 @@ export function GuestApp() {
     </>
   );
 
+  const goAfterBreakfast = () => {
+    if (!draft.breakfast_type_id) {
+      setMessage("Completar todos los campos");
+      return;
+    }
+    setMessage("");
+    setStep(selectedBreakfast?.has_eggs ? "egg" : "extras");
+  };
+
+  const extrasScreen = (
+    <GuestChrome title="SELECCION DE ADICIONALES" icon={<Coffee size={21} />}>
+      <section className="breakfastScreen">
+        {sharedMessages}
+        <div className="portalHeading">
+          <h1>{addingExtras ? "Agrega mas adicionales" : "Seleccione adicionales"}</h1>
+          <p>Los precios son temporales y se pueden modificar en un solo archivo.</p>
+        </div>
+        <section className="extrasPanel standaloneExtras">
+          {catalog.extra_categories.map((category) => {
+            const extras = category.extras.filter((extra) => extra.is_active);
+            if (!extras.length) return null;
+            return (
+              <div key={category.id} className="extraGroup">
+                <h3>{category.name}</h3>
+                {extras.map((extra) => {
+                  const selected = draft.extras.find((item) => item.extra_id === extra.id);
+                  return (
+                    <div key={extra.id} className="extraRow pricedExtraRow">
+                      <span>{extra.name}</span>
+                      <strong>S/ {(EXTRA_PRICES[extra.name] || 0).toFixed(2)}</strong>
+                      {extra.requires_egg_prep && selected && (
+                        <select value={selected.egg_prep_type_id} onChange={(event) => setExtraEggPrep(extra.id, event.target.value)}>
+                          <option value="">Huevos</option>
+                          {activeEggs.map((egg) => <option key={egg.id} value={egg.id}>{egg.name}</option>)}
+                        </select>
+                      )}
+                      <div className="qty">
+                        <QuantityButton onClick={() => updateExtra(extra, -1)}><Minus size={16} /></QuantityButton>
+                        <b>{selected?.quantity || 0}</b>
+                        <QuantityButton onClick={() => updateExtra(extra, 1)}><Plus size={16} /></QuantityButton>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </section>
+        <div className="portalNav">
+          <BackButton onClick={() => setStep(addingExtras ? "status" : selectedBreakfast?.has_eggs ? "egg" : "breakfast")} />
+          <button className="portalPrimary navPrimary" onClick={addingExtras ? submitMoreExtras : submitDraft}>
+            {addingExtras ? "Agregar al pedido" : "Continuar"} <ArrowRight size={20} />
+          </button>
+        </div>
+      </section>
+    </GuestChrome>
+  );
+
   if (step === "document") {
     return (
       <GuestChrome title="1. INICIO DE SESION" icon={<Users size={21} />} footer={false}>
@@ -200,13 +326,7 @@ export function GuestApp() {
               <p>Ingrese su DNI para acceder a su pedido</p>
               <div className="documentInput loginInput">
                 <IdCard size={20} />
-                <input
-                  value={draft.document}
-                  inputMode="numeric"
-                  maxLength="8"
-                  placeholder="DNI"
-                  onChange={(event) => setDraft({ ...draft, document: onlyDigits(event.target.value, 8) })}
-                />
+                <input value={draft.document} inputMode="numeric" maxLength="8" placeholder="DNI" onChange={(event) => setDraft({ ...draft, document: onlyDigits(event.target.value, 8) })} />
               </div>
               <button className="portalPrimary loginButton" onClick={continueFromDocument}>
                 <ArrowRight size={20} /> Validar
@@ -286,21 +406,11 @@ export function GuestApp() {
                 </Field>
               ) : (
                 <Field label="Habitacion">
-                  <input
-                    value={draft.room_number}
-                    inputMode="numeric"
-                    maxLength="3"
-                    placeholder="Ejemplo: 203"
-                    onChange={(event) => setDraft({ ...draft, room_number: onlyDigits(event.target.value, 3) })}
-                  />
+                  <input value={draft.room_number} inputMode="numeric" maxLength="3" placeholder="Ejemplo: 203" onChange={(event) => setDraft({ ...draft, room_number: onlyDigits(event.target.value, 3) })} />
                 </Field>
               )}
               <p className="hintText">{draft.delivery_location === "Restaurante" ? "Solo se permiten numeros del 1 al 7" : "Ingrese hasta 3 digitos"}</p>
-              <PortalInfo>
-                {draft.delivery_location === "Restaurante"
-                  ? "Asegurese de ingresar el numero correcto de su mesa."
-                  : "Asegurese de ingresar correctamente el numero de su habitacion."}
-              </PortalInfo>
+              <PortalInfo>{draft.delivery_location === "Restaurante" ? "Asegurese de ingresar el numero correcto de su mesa." : "Asegurese de ingresar correctamente el numero de su habitacion."}</PortalInfo>
             </div>
             <img className="locationPhoto" src={`${ASSET_BASE}/${draft.delivery_location === "Restaurante" ? "tables.png" : "room.png"}`} alt={draft.delivery_location} />
           </div>
@@ -311,7 +421,7 @@ export function GuestApp() {
               if (validation) setMessage(validation);
               else {
                 setMessage("");
-                setStep("menu");
+                setStep("breakfast");
               }
             }}>
               Continuar <ArrowRight size={20} />
@@ -322,20 +432,19 @@ export function GuestApp() {
     );
   }
 
-  if (step === "menu") {
+  if (step === "breakfast") {
     return (
-      <GuestChrome title="SELECCION DE TIPO DE DESAYUNO" icon={<ChefHat size={21} />}>
+      <GuestChrome title="SELECCION DE DESAYUNO" icon={<ChefHat size={21} />}>
         <section className="breakfastScreen">
           {sharedMessages}
           <div className="guestContext">
             <span><Users size={19} /><b>Huesped:</b> {draft.full_name}</span>
             <span>{draft.delivery_location === "Restaurante" ? <Utensils size={19} /> : <Bed size={19} />}<b>{draft.delivery_location}:</b> {draft.table_number || draft.room_number}</span>
-            <span><Users size={19} /><b>Desayuno incluido:</b> {draft.claimed_included ? "Si" : "No"}</span>
+            <span><Coffee size={19} /><b>Incluye:</b> 1 jugo y 1 cafe</span>
           </div>
-          <PortalInfo>Puede seleccionar un desayuno principal. Los adicionales se agregan debajo.</PortalInfo>
           <div className="portalHeading">
-            <h1>Seleccione su tipo de desayuno incluido</h1>
-            <p>Todos nuestros desayunos incluyen: 1 jugo y 1 cafe</p>
+            <h1>Seleccione su desayuno</h1>
+            <p>Primero elija el desayuno principal.</p>
           </div>
           <div className="breakfastCards">
             {activeBreakfasts.map((breakfast) => (
@@ -353,51 +462,9 @@ export function GuestApp() {
               </button>
             ))}
           </div>
-          {selectedBreakfast?.has_eggs && (
-            <div className="eggPrepPanel">
-              <Field label="Preparacion de huevos">
-                <select value={draft.egg_prep_type_id} onChange={(event) => setDraft({ ...draft, egg_prep_type_id: event.target.value })}>
-                  <option value="">Seleccionar</option>
-                  {activeEggs.map((egg) => <option key={egg.id} value={egg.id}>{egg.name}</option>)}
-                </select>
-              </Field>
-            </div>
-          )}
-
-          <section className="extrasPanel">
-            <h2>Adicionales</h2>
-            {catalog.extra_categories.map((category) => {
-              const extras = category.extras.filter((extra) => extra.is_active);
-              if (!extras.length) return null;
-              return (
-                <div key={category.id} className="extraGroup">
-                  <h3>{category.name}</h3>
-                  {extras.map((extra) => {
-                    const selected = draft.extras.find((item) => item.extra_id === extra.id);
-                    return (
-                      <div key={extra.id} className="extraRow">
-                        <span>{extra.name}</span>
-                        {extra.requires_egg_prep && selected && (
-                          <select value={selected.egg_prep_type_id} onChange={(event) => setExtraEggPrep(extra.id, event.target.value)}>
-                            <option value="">Huevos</option>
-                            {activeEggs.map((egg) => <option key={egg.id} value={egg.id}>{egg.name}</option>)}
-                          </select>
-                        )}
-                        <div className="qty">
-                          <QuantityButton onClick={() => updateExtra(extra, -1)}><Minus size={16} /></QuantityButton>
-                          <b>{selected?.quantity || 0}</b>
-                          <QuantityButton onClick={() => updateExtra(extra, 1)}><Plus size={16} /></QuantityButton>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              );
-            })}
-          </section>
           <div className="portalNav">
             <BackButton onClick={() => setStep("locationDetail")} />
-            <button className="portalPrimary navPrimary" onClick={submitDraft}>
+            <button className="portalPrimary navPrimary" onClick={goAfterBreakfast}>
               Continuar <ArrowRight size={20} />
             </button>
           </div>
@@ -406,16 +473,52 @@ export function GuestApp() {
     );
   }
 
+  if (step === "egg") {
+    return (
+      <GuestChrome title="TIPO DE HUEVO FRITO" icon={<EggFried size={21} />}>
+        <section className="breakfastScreen">
+          {sharedMessages}
+          <div className="portalHeading">
+            <h1>Seleccione el tipo de huevo</h1>
+            <p>{selectedBreakfast?.name}</p>
+          </div>
+          <div className="eggChoiceGrid">
+            {activeEggs.map((egg) => (
+              <button key={egg.id} className={`eggChoice ${Number(draft.egg_prep_type_id) === egg.id ? "selected" : ""}`} onClick={() => setDraft({ ...draft, egg_prep_type_id: egg.id })}>
+                <EggFried size={34} />
+                <strong>{egg.name}</strong>
+              </button>
+            ))}
+          </div>
+          <div className="portalNav">
+            <BackButton onClick={() => setStep("breakfast")} />
+            <button className="portalPrimary navPrimary" onClick={() => {
+              if (!draft.egg_prep_type_id) setMessage("Completar todos los campos");
+              else {
+                setMessage("");
+                setStep("extras");
+              }
+            }}>
+              Continuar <ArrowRight size={20} />
+            </button>
+          </div>
+        </section>
+      </GuestChrome>
+    );
+  }
+
+  if (step === "extras") return extrasScreen;
+
   if (step === "review") {
     return (
-      <GuestChrome title="RESUMEN DEL PEDIDO" icon={<ClipboardList size={21} />} countdown={`${Math.floor(secondsLeft / 60)}:${String(secondsLeft % 60).padStart(2, "0")}`}>
+      <GuestChrome title="RESUMEN DEL PEDIDO" icon={<ClipboardList size={21} />} countdown={!order?.confirmed_at ? `${Math.floor(secondsLeft / 60)}:${String(secondsLeft % 60).padStart(2, "0")}` : undefined}>
         <section className="reviewScreen">
           {sharedMessages}
-          <div className="documentCard compactCard">
+          <div className="documentCard compactCard orderSummaryCard">
             <h1>Revise su pedido</h1>
             <OrderSummary order={orderSummary} />
             <div className="portalNav inline">
-              <BackButton onClick={() => setStep("menu")}>Editar</BackButton>
+              <BackButton onClick={() => setStep("extras")}>Editar</BackButton>
               <button className="portalPrimary navPrimary" onClick={confirm}>Confirmar</button>
             </div>
           </div>
@@ -429,12 +532,19 @@ export function GuestApp() {
       <GuestChrome title="ESTADO DEL PEDIDO" icon={<ClipboardList size={21} />}>
         <section className="reviewScreen">
           {sharedMessages}
-          <div className="documentCard compactCard">
-            <h1>Estado del pedido</h1>
+          <div className="documentCard compactCard orderSummaryCard">
+            <h1>Resumen del pedido</h1>
             <div className="statusTrack portalStatus">
               {STATUS_FLOW.map((status) => <span key={status} className={STATUS_FLOW.indexOf(order.status) >= STATUS_FLOW.indexOf(status) ? "done" : ""}>{status}</span>)}
             </div>
             <OrderSummary order={order} />
+            <button className="hungerButton" onClick={() => {
+              setDraft((current) => ({ ...current, extras: [] }));
+              setAddingExtras(true);
+              setStep("extras");
+            }}>
+              ¿Te quedaste con hambre?
+            </button>
           </div>
         </section>
       </GuestChrome>
