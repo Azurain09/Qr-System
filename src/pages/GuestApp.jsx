@@ -15,6 +15,10 @@ const VALID_ROOMS = [
   "501", "502", "503", "504", "505", "506",
 ];
 const onlyDigits = (value, maxLength) => value.replace(/\D/g, "").slice(0, maxLength);
+const onlyValidRoomInput = (value, currentValue) => {
+  const digits = onlyDigits(value, 3);
+  return VALID_ROOMS.some((room) => room.startsWith(digits)) ? digits : currentValue;
+};
 const onlyLetters = (value) => value.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]/g, "").replace(/\s{2,}/g, " ");
 const normalizeMessage = (value) => value === "Completar todos los campos" ? REQUIRED_MESSAGE : value;
 
@@ -447,13 +451,10 @@ export function GuestApp() {
                 </Field>
               ) : (
                 <Field label="Habitacion">
-                  <select value={draft.room_number} onChange={(event) => setDraft({ ...draft, room_number: event.target.value })}>
-                    <option value="">Seleccionar</option>
-                    {VALID_ROOMS.map((room) => <option key={room} value={room}>{room}</option>)}
-                  </select>
+                  <input value={draft.room_number} inputMode="numeric" maxLength="3" placeholder="Ejemplo: 203" onChange={(event) => setDraft({ ...draft, room_number: onlyValidRoomInput(event.target.value, draft.room_number) })} />
                 </Field>
               )}
-              <p className="hintText">{draft.delivery_location === "Restaurante" ? "Solo se permiten numeros del 1 al 7" : "Seleccione una habitacion disponible"}</p>
+              <p className="hintText">{draft.delivery_location === "Restaurante" ? "Solo se permiten numeros del 1 al 7" : "Ingrese una habitacion disponible"}</p>
               <PortalInfo>{draft.delivery_location === "Restaurante" ? "Asegurese de ingresar el numero correcto de su mesa." : "Asegurese de ingresar correctamente el numero de su habitacion."}</PortalInfo>
             </div>
             <img className="locationPhoto" src={`${ASSET_BASE}/${draft.delivery_location === "Restaurante" ? "tables.png" : "room.png"}`} alt={draft.delivery_location} />
