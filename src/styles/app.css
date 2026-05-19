@@ -537,10 +537,31 @@ a {
   background: transparent;
   color: #1e0b43;
   font-size: 15px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-content: center;
+  column-gap: 10px;
+  row-gap: 2px;
+  line-height: 1.15;
 }
 
 .referenceContext span:last-child {
   border-right: 0;
+}
+
+.referenceContext span svg {
+  grid-row: 1 / span 2;
+}
+
+.referenceContext span b,
+.referenceContext span strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.referenceContext span strong {
+  color: #170052;
+  font-weight: 900;
 }
 
 .reviewScreen .referenceContext {

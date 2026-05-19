@@ -21,10 +21,17 @@ export function KitchenPanel() {
       const data = await api.kitchenOrders();
       setIsOpen(data.is_open);
       const selectedDate = date;
-      setOrders((data.orders || []).filter((order) => {
-        const eventDate = (order.confirmed_at || order.created_at || "").slice(0, 10);
-        return !selectedDate || eventDate === selectedDate;
-      }));
+      const visibleOrders = (data.orders || [])
+        .filter((order) => {
+          const eventDate = (order.confirmed_at || order.created_at || "").slice(0, 10);
+          return !selectedDate || eventDate === selectedDate;
+        })
+        .sort((first, second) => {
+          const firstTime = new Date(first.confirmed_at || first.created_at || 0).getTime();
+          const secondTime = new Date(second.confirmed_at || second.created_at || 0).getTime();
+          return secondTime - firstTime;
+        });
+      setOrders(visibleOrders);
     } catch (err) {
       setMessage(err.message);
     }
