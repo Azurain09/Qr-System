@@ -598,6 +598,92 @@ a {
   margin-bottom: 22px;
 }
 
+.standaloneExtras {
+  width: min(840px, 100%);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.eggChoiceGrid {
+  width: min(760px, 100%);
+  margin: 0 auto 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+}
+
+.eggChoice {
+  min-height: 128px;
+  border: 1px solid #e2e2e9;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  background: white;
+  color: #170b37;
+  cursor: pointer;
+  box-shadow: 0 12px 26px rgba(19, 0, 45, 0.06);
+}
+
+.eggChoice.selected {
+  border-color: #2ba766;
+  background: #f1fbf5;
+  color: #12603a;
+  box-shadow: 0 0 0 2px rgba(43, 167, 102, 0.16), 0 12px 26px rgba(19, 0, 45, 0.06);
+}
+
+.pricedExtraRow {
+  grid-template-columns: 1fr auto minmax(92px, auto);
+}
+
+.pricedExtraRow > strong {
+  color: #170b37;
+  white-space: nowrap;
+}
+
+.pricedExtraRow select {
+  grid-column: 1 / -1;
+}
+
+.orderSummaryCard {
+  gap: 18px;
+}
+
+.summaryBlock {
+  display: grid;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.summaryBlock ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.summaryBlock li {
+  line-height: 1.35;
+}
+
+.summaryBlock li strong {
+  float: right;
+  margin-left: 14px;
+  color: #170b37;
+}
+
+.hungerButton {
+  min-height: 48px;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 18px;
+  background: #e07900;
+  color: white;
+  font-weight: 900;
+  cursor: pointer;
+}
+
 .floatingCountdown {
   position: fixed;
   top: 78px;
@@ -1044,6 +1130,16 @@ select {
   align-items: start;
   padding-bottom: 24px;
   margin-top: 16px;
+}
+
+.kitchenOrdersLayout {
+  width: min(1220px, calc(100% - 48px));
+  margin: 16px auto 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 20px;
+  align-items: start;
+  padding-bottom: 24px;
 }
 
 .orderList {
@@ -1522,6 +1618,7 @@ select {
 
 @media (max-width: 980px) {
   .dashboardGrid,
+  .kitchenOrdersLayout,
   .reportGrid,
   .statCards,
   .staffCharts,
@@ -1659,6 +1756,7 @@ select {
 
   .staffIntro,
   .dashboardGrid,
+  .kitchenOrdersLayout,
   .reportToolbar,
   .staffDashboard,
   .dailySnapshot,

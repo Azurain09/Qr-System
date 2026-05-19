@@ -1,5 +1,5 @@
 import React from "react";
-import { BarChart3, CheckCircle2, ClipboardList, Clock3, XCircle } from "lucide-react";
+import { BarChart3, CheckCircle2, ClipboardList, Clock3 } from "lucide-react";
 
 export function Metric({ title, value }) {
   return (
@@ -17,8 +17,7 @@ export function StaffDashboard({ report }) {
       <div className="statCards">
         <StatCard icon={<ClipboardList />} color="purple" title="Pedidos totales" value={metrics.total_orders || 0} caption="Total de pedidos" />
         <StatCard icon={<CheckCircle2 />} color="green" title="Pedidos completados" value={metrics.completed_orders || 0} caption="Total completados" />
-        <StatCard icon={<Clock3 />} color="orange" title="Pedidos en preparacion" value={metrics.in_preparation_orders || 0} caption="En preparacion" />
-        <StatCard icon={<XCircle />} color="red" title="Pedidos cancelados" value={metrics.cancelled_orders || 0} caption="Cancelados" />
+        <StatCard icon={<Clock3 />} color="orange" title="Pedidos en preparación" value={metrics.in_preparation_orders || 0} caption="En preparación" />
         <StatCard icon={<Clock3 />} color="blue" title="Tiempo promedio" value={`${metrics.average_minutes || 0} min`} caption="Tiempo de entrega" />
       </div>
       <div className="staffCharts">
@@ -27,7 +26,6 @@ export function StaffDashboard({ report }) {
         <LinePanel title="Pedidos por dia" data={report.orders_by_day || {}} />
         <RankTable title="Productos mas solicitados" columns={["#", "Producto", "Cantidad"]} rows={(report.top_products || []).map((item, index) => [index + 1, item.name, item.quantity])} />
         <RankTable title="Mesas mas activas" columns={["#", "Mesa", "Pedidos"]} rows={(report.active_tables || []).map((item, index) => [index + 1, item.name, item.orders])} />
-        <RankTable title="Ultimos pedidos cancelados" columns={["Pedido", "Motivo", "Fecha y hora"]} rows={(report.latest_cancellations || []).map((item) => [item.order, item.reason, item.datetime])} />
       </div>
     </section>
   );
@@ -90,21 +88,20 @@ function PiePanel({ title, data }) {
 function GroupedBars({ title, data }) {
   const categories = Object.keys(data);
   const max = Math.max(1, ...categories.flatMap((category) => Object.values(data[category] || {})));
-  const statuses = ["Completados", "En preparacion", "Cancelados"];
+  const statuses = ["Completados", "En preparación"];
   return (
     <article className="staffPanelCard">
       <h2>{title}</h2>
       <div className="groupLegend">
         <span><i className="greenDot" /> Completados</span>
-        <span><i className="blueDot" /> En preparacion</span>
-        <span><i className="redDot" /> Cancelados</span>
+        <span><i className="blueDot" /> En preparación</span>
       </div>
       <div className="groupedBars">
         {categories.map((category) => (
           <div className="groupedBar" key={category}>
             <div>
               {statuses.map((status) => (
-                <i key={status} className={status === "Completados" ? "greenBar" : status === "En preparacion" ? "blueBar" : "redBar"} style={{ height: `${((data[category]?.[status] || 0) / max) * 100}%` }} />
+                <i key={status} className={status === "Completados" ? "greenBar" : "blueBar"} style={{ height: `${((data[category]?.[status] || 0) / max) * 100}%` }} />
               ))}
             </div>
             <span>{category}</span>

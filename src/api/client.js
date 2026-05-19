@@ -43,6 +43,7 @@ export const api = {
   catalog: () => request("/catalog"),
   createOrder: (payload) => request("/orders", { method: "POST", body: JSON.stringify(payload) }),
   confirmOrder: (orderId) => request(`/orders/${orderId}/confirm`, { method: "POST" }),
+  addOrderExtras: (orderId, extras) => request(`/orders/${orderId}/extras`, { method: "POST", body: JSON.stringify({ extras }) }),
   getOrder: (orderId) => request(`/orders/${orderId}`),
   getOrderByDocument: (document) => request(`/orders/by-document/${document}`),
   kitchenOrders: () => request(`/staff/${SLUGS.cook}/orders`),
