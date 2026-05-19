@@ -31,9 +31,9 @@ export function ServiceClosed({ title = "Sistema fuera de servicio" }) {
   );
 }
 
-export function GuestChrome({ title, icon, children, footer = true, countdown }) {
+export function GuestChrome({ title, icon, children, footer = true, countdown, className = "" }) {
   return (
-    <main className="guestPortal">
+    <main className={`guestPortal ${className}`}>
       <header className="portalTopbar">
         <div className="portalTitle">
           <span className="portalIcon">{icon}</span>
