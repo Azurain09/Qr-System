@@ -14,6 +14,7 @@ export function KitchenPanel() {
   const [message, setMessage] = useState("");
   const [cancellingOrder, setCancellingOrder] = useState(null);
   const [cancelReason, setCancelReason] = useState("");
+  const [updatedOrders, setUpdatedOrders] = useState({});
 
   const loadOrders = async () => {
     try {
@@ -32,7 +33,15 @@ export function KitchenPanel() {
   useEffect(() => {
     loadOrders();
     const socket = new WebSocket(socketUrl(`/ws/kitchen/${SLUGS.cook}`));
-    socket.onmessage = () => {
+    socket.onmessage = (event) => {
+      try {
+        const payload = JSON.parse(event.data);
+        if (payload.order?.id) {
+          setUpdatedOrders((current) => ({ ...current, [payload.order.id]: Date.now() }));
+        }
+      } catch {
+        // Ignore malformed socket payloads.
+      }
       loadOrders();
       reload();
     };
@@ -58,6 +67,9 @@ export function KitchenPanel() {
   const updateOrder = async (order, status) => {
     try {
       await api.updateStatus(order.id, { status });
+      if (status === "Entregado") {
+        setTimeout(loadOrders, 31000);
+      }
       await loadOrders();
     } catch (err) {
       setMessage(err.message);
@@ -152,13 +164,16 @@ export function KitchenPanel() {
           <h2>Pedidos de hoy</h2>
           <div className="orderList">
             {orders.map((order) => (
-              <article className="orderCard" key={order.id}>
+              <article className={`orderCard ${updatedOrders[order.id] ? "updatedOrderCard" : ""}`} key={order.id}>
                 <div className="orderTop">
                   <div>
                     <h3>{order.guest_name}</h3>
                     <p>{order.document} - {order.delivery_location} - {order.table_number ? `Mesa ${order.table_number}` : `Hab. ${order.room_number}`}</p>
                   </div>
-                  <span className="included">{order.status}</span>
+                  <div className="orderBadges">
+                    {updatedOrders[order.id] && <span className="updateBadge">Pedido actualizado</span>}
+                    <span className="included">{order.status}</span>
+                  </div>
                 </div>
                 <OrderSummary order={order} />
                 <p className="muted">Confirmado: {order.confirmed_at ? new Date(order.confirmed_at).toLocaleTimeString("es-PE") : "-"}</p>
@@ -168,9 +183,11 @@ export function KitchenPanel() {
                       {status}
                     </button>
                   ))}
-                  <button className="cancelOrderButton" disabled={order.status === "Cancelado"} onClick={() => setCancellingOrder(order)}>
-                    <XCircle size={16} /> Cancelar
-                  </button>
+                  {order.status !== "Entregado" && (
+                    <button className="cancelOrderButton" disabled={order.status === "Cancelado"} onClick={() => setCancellingOrder(order)}>
+                      <XCircle size={16} /> Cancelar
+                    </button>
+                  )}
                 </div>
               </article>
             ))}

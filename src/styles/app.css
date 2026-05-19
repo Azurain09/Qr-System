@@ -335,6 +335,9 @@ a {
 
 .portalAlert {
   width: min(760px, 100%);
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
 }
 
 .portalHeading {
@@ -538,6 +541,15 @@ a {
 
 .referenceContext span:last-child {
   border-right: 0;
+}
+
+.reviewScreen .referenceContext {
+  width: min(1120px, 100%);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.referenceContext span {
+  min-width: 0;
 }
 
 .breakfastCards {
@@ -1464,6 +1476,29 @@ select {
   color: var(--muted);
 }
 
+.orderBadges {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.updateBadge {
+  width: fit-content;
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: #e9f7ff;
+  color: #075985;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.updatedOrderCard {
+  border-color: #93c5fd;
+  box-shadow: 0 12px 32px rgba(14, 116, 144, 0.14);
+}
+
 .statusButtons {
   flex-wrap: wrap;
   margin: 14px 0;
@@ -2162,6 +2197,10 @@ select {
 
   .cancelContextItem:last-child {
     border-bottom: 0;
+  }
+
+  .reviewScreen .referenceContext {
+    grid-template-columns: 1fr;
   }
 
   .eggChoiceGrid {

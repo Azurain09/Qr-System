@@ -7,7 +7,10 @@ import { BackButton, Field, GuestChrome, PortalInfo, QuantityButton, ServiceClos
 import { OrderSummary } from "../components/OrderSummary";
 
 const STORAGE_KEY = "hotel_guest_order_session";
+const REQUIRED_MESSAGE = "Completar correctamente todos los campos";
 const onlyDigits = (value, maxLength) => value.replace(/\D/g, "").slice(0, maxLength);
+const onlyLetters = (value) => value.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]/g, "").replace(/\s{2,}/g, " ");
+const normalizeMessage = (value) => value === "Completar todos los campos" ? REQUIRED_MESSAGE : value;
 
 const initialDraft = {
   document: "",
@@ -127,7 +130,7 @@ export function GuestApp() {
 
   const continueFromDocument = async () => {
     if (!/^\d{8}$/.test(draft.document)) {
-      setMessage("Completar todos los campos");
+      setMessage(REQUIRED_MESSAGE);
       return;
     }
     try {
@@ -140,18 +143,18 @@ export function GuestApp() {
       }
       setMessage("");
     } catch (err) {
-      setMessage(err.message);
+      setMessage(normalizeMessage(err.message));
     }
   };
 
   const validateIdentity = () => {
-    if (!/^\d{8}$/.test(draft.document) || !draft.full_name.trim()) return "Completar todos los campos";
+    if (!/^\d{8}$/.test(draft.document) || !/^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$/.test(draft.full_name.trim())) return REQUIRED_MESSAGE;
     return "";
   };
 
   const validateLocationDetail = () => {
-    if (draft.delivery_location === "Restaurante" && !["1", "2", "3", "4", "5", "6", "7"].includes(draft.table_number)) return "Completar todos los campos";
-    if (draft.delivery_location === "Habitacion" && !/^\d{3}$/.test(draft.room_number)) return "Completar todos los campos";
+    if (draft.delivery_location === "Restaurante" && !["1", "2", "3", "4", "5", "6", "7"].includes(draft.table_number)) return REQUIRED_MESSAGE;
+    if (draft.delivery_location === "Habitacion" && !/^\d{3}$/.test(draft.room_number)) return REQUIRED_MESSAGE;
     return "";
   };
 
@@ -159,7 +162,7 @@ export function GuestApp() {
     const missingEggPrep = draft.extras
       .map((item) => ({ ...item, extra: allExtras.find((extra) => extra.id === item.extra_id) }))
       .filter((item) => item.extra?.requires_egg_prep && !item.egg_prep_type_id);
-    return missingEggPrep.length ? "Completar todos los campos" : "";
+    return missingEggPrep.length ? REQUIRED_MESSAGE : "";
   };
 
   const buildExtrasPayload = () => draft.extras.map((item) => ({
@@ -170,7 +173,7 @@ export function GuestApp() {
 
   const submitDraft = async () => {
     if (!draft.breakfast_type_id || (selectedBreakfast?.has_eggs && !draft.egg_prep_type_id)) {
-      setMessage("Completar todos los campos");
+      setMessage(REQUIRED_MESSAGE);
       return;
     }
     const drinksValidation = validateDrinks();
@@ -197,7 +200,7 @@ export function GuestApp() {
       setStep("review");
       setMessage("");
     } catch (err) {
-      setMessage(err.message);
+      setMessage(normalizeMessage(err.message));
     }
   };
 
@@ -219,7 +222,7 @@ export function GuestApp() {
       setStep("status");
       setMessage("");
     } catch (err) {
-      setMessage(err.message);
+      setMessage(normalizeMessage(err.message));
     }
   };
 
@@ -230,7 +233,7 @@ export function GuestApp() {
       setStep("status");
       setMessage("");
     } catch (err) {
-      setMessage(err.message);
+      setMessage(normalizeMessage(err.message));
       if (err.message.includes("expiro")) setStep("document");
     }
   };
@@ -266,7 +269,7 @@ export function GuestApp() {
 
   const goAfterBreakfast = () => {
     if (!draft.breakfast_type_id) {
-      setMessage("Completar todos los campos");
+      setMessage(REQUIRED_MESSAGE);
       return;
     }
     setMessage("");
@@ -347,12 +350,11 @@ export function GuestApp() {
 
   if (step === "document") {
     return (
-      <GuestChrome title="1. INICIO DE SESION" icon={<Users size={21} />} footer={false} className="loginPortal">
+      <GuestChrome title="INICIO DE SESION" icon={<Users size={21} />} footer={false} className="loginPortal">
         <section className="documentScreen loginReferenceScreen">
           {sharedMessages}
           <div className="loginSplitCard">
             <div className="loginPane">
-              <img className="loginLogoLarge" src={`${ASSET_BASE}/logo.png`} alt="QR System" />
               <h1>Bienvenido</h1>
               <p>Ingrese su DNI para acceder a su pedido</p>
               <div className="documentInput loginInput">
@@ -383,7 +385,7 @@ export function GuestApp() {
           </div>
           <div className="guestDetailsCard">
             <Field label="Nombre completo">
-              <input value={draft.full_name} onChange={(event) => setDraft({ ...draft, full_name: event.target.value })} />
+              <input value={draft.full_name} onChange={(event) => setDraft({ ...draft, full_name: onlyLetters(event.target.value) })} />
             </Field>
             <label className="checkRow">
               <input type="checkbox" checked={draft.claimed_included} onChange={(event) => setDraft({ ...draft, claimed_included: event.target.checked })} />
@@ -527,7 +529,7 @@ export function GuestApp() {
           <div className="portalNav">
             <BackButton onClick={() => setStep("breakfast")} />
             <button className="portalPrimary navPrimary" onClick={() => {
-              if (!draft.egg_prep_type_id) setMessage("Completar todos los campos");
+              if (!draft.egg_prep_type_id) setMessage(REQUIRED_MESSAGE);
               else {
                 setMessage("");
                 setStep("drinks");
@@ -638,7 +640,7 @@ export function GuestApp() {
               </div>
             )}
             <OrderSummary order={displayOrder} />
-            {!isCancelled && (
+            {!isCancelled && order.status !== "Entregado" && (
               <button className="hungerButton" onClick={() => {
                 setDraft((current) => ({ ...current, extras: [] }));
                 setAddingExtras(true);
