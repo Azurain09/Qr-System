@@ -43,6 +43,7 @@ export function GuestApp() {
   const [order, setOrder] = useState(null);
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [addingExtras, setAddingExtras] = useState(false);
+  const [hasRequestedMore, setHasRequestedMore] = useState(Boolean(stored.hasRequestedMore));
 
   const activeBreakfasts = catalog?.breakfast_types.filter((item) => item.is_active) || [];
   const activeEggs = catalog?.egg_prep_types.filter((item) => item.is_active) || [];
@@ -65,8 +66,8 @@ export function GuestApp() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ draft, orderId: order?.id || null, step }));
-  }, [draft, order?.id, step]);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ draft, orderId: order?.id || null, step, hasRequestedMore }));
+  }, [draft, order?.id, step, hasRequestedMore]);
 
   useEffect(() => {
     if (step !== "review" || !order || order.confirmed_at) return;
@@ -219,6 +220,7 @@ export function GuestApp() {
       setOrder(updated);
       setDraft((current) => ({ ...current, extras: [] }));
       setAddingExtras(false);
+      setHasRequestedMore(true);
       setStep("status");
       setMessage("");
     } catch (err) {
@@ -609,7 +611,7 @@ export function GuestApp() {
             </div>
             <div className="confirmationMedia">
               <img src={BREAKFAST_IMAGES[selectedBreakfast?.name] || `${ASSET_BASE}/Americano.png`} alt={selectedBreakfast?.name || "Desayuno"} />
-              <div className="deliveryTime"><CalendarClock size={34} /><p><b>Tiempo estimado de entrega:</b><span>15 - 25 minutos</span></p></div>
+              <div className="deliveryTime"><CalendarClock size={34} /><p><b>Tiempo estimado de entrega:</b><span>15 minutos</span></p></div>
             </div>
           </div>
           <div className="portalNav reviewActions">
@@ -635,18 +637,21 @@ export function GuestApp() {
                 <p><b>Motivo:</b> {order.cancellation_reason || "Pedido cancelado por cocina"}</p>
               </div>
             ) : (
-              <div className="statusTrack portalStatus">
-                {STATUS_FLOW.map((status) => <span key={status} className={STATUS_FLOW.indexOf(order.status) >= STATUS_FLOW.indexOf(status) ? "done" : ""}>{status}</span>)}
-              </div>
+              <>
+                <div className="statusTrack portalStatus">
+                  {STATUS_FLOW.map((status) => <span key={status} className={STATUS_FLOW.indexOf(order.status) >= STATUS_FLOW.indexOf(status) ? "done" : ""}>{status}</span>)}
+                </div>
+                {order.status === "Entregado" && <p className="deliveredThanks">Su pedido fue entregado muchas gracias</p>}
+              </>
             )}
             <OrderSummary order={displayOrder} />
-            {!isCancelled && order.status !== "Entregado" && (
+            {!isCancelled && order.status !== "Entregado" && !hasRequestedMore && (
               <button className="hungerButton" onClick={() => {
                 setDraft((current) => ({ ...current, extras: [] }));
                 setAddingExtras(true);
                 setStep("extras");
               }}>
-                ¿Te quedaste con hambre?
+                ¿Desea agregar algo más a su pedido?
               </button>
             )}
           </div>

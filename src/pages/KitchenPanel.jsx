@@ -68,7 +68,7 @@ export function KitchenPanel() {
     try {
       await api.updateStatus(order.id, { status });
       if (status === "Entregado") {
-        setTimeout(loadOrders, 31000);
+        setTimeout(loadOrders, 21000);
       }
       await loadOrders();
     } catch (err) {
