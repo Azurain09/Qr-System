@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Bed, CalendarClock, ChefHat, ClipboardList, Coffee, DoorOpen, EggFried, IdCard, Info, MapPin, Minus, Plus, Users, Utensils } from "lucide-react";
+import { ArrowRight, Bed, CalendarClock, ChefHat, ClipboardList, Coffee, DoorOpen, EggFried, IdCard, Info, MapPin, Minus, Plus, Users, Utensils, XCircle } from "lucide-react";
 import { api, socketUrl } from "../api/client";
 import { ASSET_BASE, BREAKFAST_IMAGES, COFFEE_OPTIONS, EGG_DESCRIPTIONS, EGG_IMAGES, EXTRA_PRICES, JUICE_OPTIONS, STATUS_FLOW } from "../constants/app";
 import { useCatalog } from "../hooks/useCatalog";
@@ -620,23 +620,33 @@ export function GuestApp() {
   }
 
   if (step === "status" && order) {
+    const isCancelled = order.status === "Cancelado";
     return (
-      <GuestChrome title="ESTADO DEL PEDIDO" icon={<ClipboardList size={21} />}>
+      <GuestChrome title={isCancelled ? "PEDIDO CANCELADO" : "ESTADO DEL PEDIDO"} icon={isCancelled ? <XCircle size={21} /> : <ClipboardList size={21} />}>
         <section className="reviewScreen">
           {sharedMessages}
           <div className="documentCard compactCard orderSummaryCard">
-            <h1>Resumen del pedido</h1>
-            <div className="statusTrack portalStatus">
-              {STATUS_FLOW.map((status) => <span key={status} className={STATUS_FLOW.indexOf(order.status) >= STATUS_FLOW.indexOf(status) ? "done" : ""}>{status}</span>)}
-            </div>
+            <h1>{isCancelled ? "Su pedido fue cancelado" : "Resumen del pedido"}</h1>
+            {isCancelled ? (
+              <div className="cancelledGuestNotice">
+                <XCircle size={28} />
+                <p><b>Motivo:</b> {order.cancellation_reason || "Pedido cancelado por cocina"}</p>
+              </div>
+            ) : (
+              <div className="statusTrack portalStatus">
+                {STATUS_FLOW.map((status) => <span key={status} className={STATUS_FLOW.indexOf(order.status) >= STATUS_FLOW.indexOf(status) ? "done" : ""}>{status}</span>)}
+              </div>
+            )}
             <OrderSummary order={displayOrder} />
-            <button className="hungerButton" onClick={() => {
-              setDraft((current) => ({ ...current, extras: [] }));
-              setAddingExtras(true);
-              setStep("extras");
-            }}>
-              ¿Te quedaste con hambre?
-            </button>
+            {!isCancelled && (
+              <button className="hungerButton" onClick={() => {
+                setDraft((current) => ({ ...current, extras: [] }));
+                setAddingExtras(true);
+                setStep("extras");
+              }}>
+                ¿Te quedaste con hambre?
+              </button>
+            )}
           </div>
         </section>
       </GuestChrome>

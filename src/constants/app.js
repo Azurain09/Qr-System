@@ -1,10 +1,24 @@
 export const CANCELLATION_REASONS = [
-  "Pedido duplicado",
-  "Retiro del huesped antes de recibir el desayuno",
-  "Agotamiento de insumos",
-  "Error en el pedido",
-  "Imposibilidad de preparacion",
-  "Cambio de decision del huesped",
+  {
+    title: "Pedido realizado por error",
+    description: "Hice el pedido por equivocacion.",
+  },
+  {
+    title: "Cambios de planes",
+    description: "Mis planes han cambiado y ya no necesito el pedido.",
+  },
+  {
+    title: "Tiempo de espera",
+    description: "El tiempo de espera es demasiado largo.",
+  },
+  {
+    title: "Problema con el pedido",
+    description: "Hubo un problema con mi pedido.",
+  },
+  {
+    title: "Otro motivo",
+    description: "Otro motivo no listado.",
+  },
 ];
 
 export const STATUS_FLOW = ["Pendiente", "En preparación", "Entregado"];
