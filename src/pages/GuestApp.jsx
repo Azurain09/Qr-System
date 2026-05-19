@@ -8,6 +8,12 @@ import { OrderSummary } from "../components/OrderSummary";
 
 const STORAGE_KEY = "hotel_guest_order_session";
 const REQUIRED_MESSAGE = "Completar correctamente todos los campos";
+const VALID_ROOMS = [
+  "201", "202", "203", "204", "205", "206",
+  "301", "302", "303", "304", "305", "306",
+  "401", "403", "404", "405", "406",
+  "501", "502", "503", "504", "505", "506",
+];
 const onlyDigits = (value, maxLength) => value.replace(/\D/g, "").slice(0, maxLength);
 const onlyLetters = (value) => value.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]/g, "").replace(/\s{2,}/g, " ");
 const normalizeMessage = (value) => value === "Completar todos los campos" ? REQUIRED_MESSAGE : value;
@@ -155,7 +161,7 @@ export function GuestApp() {
 
   const validateLocationDetail = () => {
     if (draft.delivery_location === "Restaurante" && !["1", "2", "3", "4", "5", "6", "7"].includes(draft.table_number)) return REQUIRED_MESSAGE;
-    if (draft.delivery_location === "Habitacion" && !/^\d{3}$/.test(draft.room_number)) return REQUIRED_MESSAGE;
+    if (draft.delivery_location === "Habitacion" && !VALID_ROOMS.includes(draft.room_number)) return REQUIRED_MESSAGE;
     return "";
   };
 
@@ -441,10 +447,13 @@ export function GuestApp() {
                 </Field>
               ) : (
                 <Field label="Habitacion">
-                  <input value={draft.room_number} inputMode="numeric" maxLength="3" placeholder="Ejemplo: 203" onChange={(event) => setDraft({ ...draft, room_number: onlyDigits(event.target.value, 3) })} />
+                  <select value={draft.room_number} onChange={(event) => setDraft({ ...draft, room_number: event.target.value })}>
+                    <option value="">Seleccionar</option>
+                    {VALID_ROOMS.map((room) => <option key={room} value={room}>{room}</option>)}
+                  </select>
                 </Field>
               )}
-              <p className="hintText">{draft.delivery_location === "Restaurante" ? "Solo se permiten numeros del 1 al 7" : "Ingrese hasta 3 digitos"}</p>
+              <p className="hintText">{draft.delivery_location === "Restaurante" ? "Solo se permiten numeros del 1 al 7" : "Seleccione una habitacion disponible"}</p>
               <PortalInfo>{draft.delivery_location === "Restaurante" ? "Asegurese de ingresar el numero correcto de su mesa." : "Asegurese de ingresar correctamente el numero de su habitacion."}</PortalInfo>
             </div>
             <img className="locationPhoto" src={`${ASSET_BASE}/${draft.delivery_location === "Restaurante" ? "tables.png" : "room.png"}`} alt={draft.delivery_location} />
