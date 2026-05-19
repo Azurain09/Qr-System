@@ -57,8 +57,8 @@ a {
 }
 
 .portalTopbar {
-  min-height: 66px;
-  padding: 10px 28px;
+  min-height: 86px;
+  padding: 12px 30px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -89,8 +89,8 @@ a {
 }
 
 .portalLogo {
-  width: min(210px, 34vw);
-  max-height: 50px;
+  width: min(255px, 35vw);
+  max-height: 64px;
   object-fit: contain;
 }
 
@@ -519,6 +519,27 @@ a {
   font-weight: 800;
 }
 
+.referenceContext {
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  border: 1px solid #e4e1ec;
+  border-radius: 8px;
+  padding: 12px 16px;
+  background: #fbfaff;
+}
+
+.referenceContext span {
+  border: 0;
+  border-right: 1px solid #ded9e8;
+  border-radius: 0;
+  background: transparent;
+  color: #1e0b43;
+  font-size: 15px;
+}
+
+.referenceContext span:last-child {
+  border-right: 0;
+}
+
 .breakfastCards {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -605,32 +626,308 @@ a {
 }
 
 .eggChoiceGrid {
-  width: min(760px, 100%);
-  margin: 0 auto 24px;
+  width: min(1120px, 100%);
+  margin: 22px auto 28px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
 }
 
 .eggChoice {
-  min-height: 128px;
+  min-height: 315px;
   border: 1px solid #e2e2e9;
   border-radius: 8px;
+  padding: 14px;
   display: grid;
-  place-items: center;
-  align-content: center;
-  gap: 10px;
+  align-content: start;
+  gap: 16px;
   background: white;
   color: #170b37;
+  text-align: left;
   cursor: pointer;
   box-shadow: 0 12px 26px rgba(19, 0, 45, 0.06);
 }
 
 .eggChoice.selected {
-  border-color: #2ba766;
-  background: #f1fbf5;
-  color: #12603a;
-  box-shadow: 0 0 0 2px rgba(43, 167, 102, 0.16), 0 12px 26px rgba(19, 0, 45, 0.06);
+  border-color: #f18700;
+  box-shadow: 0 0 0 1px #f18700, 0 12px 26px rgba(19, 0, 45, 0.06);
+}
+
+.eggChoice img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 7px;
+}
+
+.eggChoice div {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 7px 12px;
+  align-items: center;
+}
+
+.eggChoice div span {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  grid-row: span 2;
+  background: #ff8500;
+  color: white;
+}
+
+.eggChoice strong {
+  color: #ff7a00;
+  font-size: 22px;
+}
+
+.eggChoice:nth-child(2) div span {
+  background: #16a34a;
+  color: white;
+}
+
+.eggChoice:nth-child(2) strong {
+  color: #16a34a;
+}
+
+.eggChoice:nth-child(3) div span {
+  background: #1e83ef;
+  color: white;
+}
+
+.eggChoice:nth-child(3) strong {
+  color: #1e83ef;
+}
+
+.eggChoice:nth-child(4) div span {
+  background: #8b42d6;
+  color: white;
+}
+
+.eggChoice:nth-child(4) strong {
+  color: #8b42d6;
+}
+
+.eggChoice p {
+  grid-column: 2;
+  margin: 0;
+  color: #303044;
+  line-height: 1.35;
+}
+
+.eggChoice i,
+.drinkCard i {
+  width: 22px;
+  height: 22px;
+  margin: 4px auto 0;
+  border: 1.5px solid #697086;
+  border-radius: 999px;
+}
+
+.eggChoice.selected i,
+.drinkCard.selected i {
+  border: 5px solid #f18700;
+}
+
+.inlineNotice {
+  width: min(680px, 100%);
+  min-height: 52px;
+  margin: 0 auto 18px;
+  border: 1px solid #f4dfbd;
+  border-radius: 7px;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: #fff7e8;
+  color: #2b2840;
+}
+
+.inlineNotice svg {
+  color: #f18700;
+}
+
+.inlineNotice b {
+  color: #ef8200;
+}
+
+.drinkSelectionGrid {
+  width: min(1080px, 100%);
+  margin: 0 auto 18px;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 18px;
+}
+
+.drinkGroup {
+  border: 1px solid #e0d7eb;
+  border-radius: 8px;
+  padding: 18px;
+  background: white;
+}
+
+.drinkGroup.orange {
+  border-color: #ff8a00;
+}
+
+.drinkGroup.purple {
+  border-color: #8b42d6;
+}
+
+.drinkGroupTitle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.drinkGroupTitle > span {
+  width: 62px;
+  height: 62px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #ff8a00;
+  color: white;
+}
+
+.drinkGroup.purple .drinkGroupTitle > span {
+  background: #8b42d6;
+}
+
+.drinkGroupTitle h2 {
+  margin: 0;
+  color: #ff7a00;
+  font-size: 25px;
+}
+
+.drinkGroup.purple h2 {
+  color: #8b42d6;
+}
+
+.drinkGroupTitle small {
+  font-size: 18px;
+}
+
+.drinkGroupTitle p {
+  margin: 2px 0 0;
+  color: #303044;
+}
+
+.drinkCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(124px, 1fr));
+  gap: 16px;
+}
+
+.drinkCard {
+  min-height: 210px;
+  border: 1px solid #e1e2e8;
+  border-radius: 8px;
+  padding: 14px 10px;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  background: white;
+  color: #2d3046;
+  cursor: pointer;
+}
+
+.drinkCard.selected {
+  border-color: #ff8a00;
+}
+
+.drinkGroup.purple .drinkCard.selected {
+  border-color: #8b42d6;
+}
+
+.drinkGroup.purple .drinkCard.selected i {
+  border-color: #8b42d6;
+}
+
+.drinkCard img {
+  width: 100%;
+  max-width: 150px;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+}
+
+.drinkCard strong {
+  text-align: center;
+}
+
+.drinkCard.selected strong {
+  color: #ff7a00;
+}
+
+.drinkGroup.purple .drinkCard.selected strong {
+  color: #8b42d6;
+}
+
+.drinksNotice {
+  width: min(820px, 100%);
+}
+
+.confirmationLayout {
+  width: min(1120px, 100%);
+  display: grid;
+  grid-template-columns: 0.78fr 1.15fr;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.confirmationLayout .documentCard {
+  width: 100%;
+  box-shadow: none;
+}
+
+.orderSummaryCard h2 {
+  margin: 0 0 6px;
+  color: #1e0b43;
+}
+
+.confirmationMedia {
+  display: grid;
+  gap: 12px;
+}
+
+.confirmationMedia > img {
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  max-height: 360px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.deliveryTime {
+  min-height: 72px;
+  border: 1px solid #e4e1ec;
+  border-radius: 8px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: #fbfaff;
+  color: #1e0b43;
+}
+
+.deliveryTime p {
+  margin: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.deliveryTime span {
+  color: #111324;
+}
+
+.reviewActions {
+  margin-top: 12px;
 }
 
 .pricedExtraRow {
@@ -1629,8 +1926,14 @@ select {
   .locationDetailPanel,
   .guestContext,
   .breakfastCards,
+  .drinkSelectionGrid,
+  .confirmationLayout,
   .purgePanel {
     grid-template-columns: 1fr;
+  }
+
+  .eggChoiceGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .loginSplitCard {
@@ -1668,7 +1971,7 @@ select {
   }
 
   .portalLogo {
-    width: 138px;
+    width: 150px;
   }
 
   .portalCanvas {
@@ -1716,6 +2019,55 @@ select {
 
   .portalInfo p {
     grid-column: 1 / -1;
+  }
+
+  .referenceContext {
+    gap: 4px;
+    padding: 8px 10px;
+  }
+
+  .referenceContext span {
+    min-height: 44px;
+    border-right: 0;
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  .eggChoiceGrid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .eggChoice {
+    min-height: 0;
+  }
+
+  .drinkGroup {
+    padding: 14px;
+  }
+
+  .drinkCards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .drinkCard {
+    min-height: 172px;
+  }
+
+  .inlineNotice {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    justify-content: stretch;
+    text-align: left;
+  }
+
+  .inlineNotice span {
+    grid-column: 1 / -1;
+  }
+
+  .confirmationMedia > img {
+    min-height: 210px;
   }
 
   .locationCards {
