@@ -14,6 +14,7 @@ const VALID_ROOMS = [
   "401", "403", "404", "405", "406",
   "501", "502", "503", "504", "505", "506",
 ];
+const VALID_STEPS = ["document", "identity", "locationDetail", "breakfast", "egg", "drinks", "extras", "review", "status"];
 const onlyDigits = (value, maxLength) => value.replace(/\D/g, "").slice(0, maxLength);
 const onlyValidRoomInput = (value, currentValue) => {
   const digits = onlyDigits(value, 3);
@@ -47,7 +48,7 @@ function readStoredSession() {
 export function GuestApp() {
   const { catalog, error } = useCatalog();
   const stored = useMemo(readStoredSession, []);
-  const [step, setStep] = useState(stored.step || "document");
+  const [step, setStep] = useState(VALID_STEPS.includes(stored.step) ? stored.step : "document");
   const [message, setMessage] = useState("");
   const [draft, setDraft] = useState({ ...initialDraft, ...(stored.draft || {}) });
   const [order, setOrder] = useState(null);
@@ -70,6 +71,8 @@ export function GuestApp() {
         setStep(data.confirmed_at ? "status" : "review");
       } catch {
         localStorage.removeItem(STORAGE_KEY);
+        setOrder(null);
+        setStep("document");
       }
     };
     restoreOrder();
@@ -670,7 +673,26 @@ export function GuestApp() {
     );
   }
 
-  return null;
+  return (
+    <GuestChrome title="INICIO DE SESION" icon={<Users size={21} />} footer={false} className="loginPortal">
+      <section className="documentScreen loginReferenceScreen">
+        {sharedMessages}
+        <div className="portalHeading">
+          <h1>Estamos preparando tu sesión</h1>
+          <p>Si la pantalla no avanza, vuelve a ingresar tu DNI.</p>
+        </div>
+        <div className="portalNav">
+          <button className="portalPrimary navPrimary" onClick={() => {
+            localStorage.removeItem(STORAGE_KEY);
+            setOrder(null);
+            setStep("document");
+          }}>
+            Volver al inicio
+          </button>
+        </div>
+      </section>
+    </GuestChrome>
+  );
 }
 
 function DrinkGroup({ title, subtitle, options, value, onChange, tone }) {
