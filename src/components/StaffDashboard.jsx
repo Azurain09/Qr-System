@@ -21,8 +21,16 @@ export function StaffDashboard({ report }) {
         <StatCard icon={<Clock3 />} color="blue" title="Tiempo promedio" value={`${metrics.average_minutes || 0} min`} caption="Tiempo de entrega" />
       </div>
       <div className="staffCharts">
-        <PiePanel title="Pedidos por categoria" data={report.category_mix || {}} />
-        <GroupedBars title="Pedidos por estado" data={report.status_by_category || {}} />
+        <PiePanel
+          title="Pedidos por categoria"
+          data={report.category_mix || {}}
+          description="Distribución de pedidos y adicionales agrupados por categoría para identificar qué tipo de producto tiene mayor demanda."
+        />
+        <GroupedBars
+          title="Pedidos por estado"
+          data={report.status_by_category || {}}
+          description="Comparación de pedidos completados y en preparación por categoría, con eje de cantidad como referencia."
+        />
         <LinePanel
           title="Pedidos por hora"
           data={report.orders_by_hour || {}}
@@ -61,7 +69,7 @@ function StatCard({ icon, color, title, value, caption }) {
   );
 }
 
-function PiePanel({ title, data }) {
+function PiePanel({ title, data, description }) {
   const entries = Object.entries(data);
   const total = Math.max(1, entries.reduce((sum, [, value]) => sum + value, 0));
   const colors = ["#5b1fd1", "#1479f6", "#ff9815", "#75b7ff", "#a14ed8"];
@@ -77,6 +85,7 @@ function PiePanel({ title, data }) {
   return (
     <article className="staffPanelCard piePanel">
       <h2>{title}</h2>
+      {description && <p className="chartDescription">{description}</p>}
       <div className="pieWrap">
         <div className="pieChart" style={{ background: `conic-gradient(${gradient})` }} />
         <div className="pieLegend">
@@ -89,28 +98,37 @@ function PiePanel({ title, data }) {
   );
 }
 
-function GroupedBars({ title, data }) {
+function GroupedBars({ title, data, description }) {
   const categories = Object.keys(data);
   const max = Math.max(1, ...categories.flatMap((category) => Object.values(data[category] || {})));
+  const mid = Math.ceil(max / 2);
   const statuses = ["Completados", "En preparación"];
   return (
     <article className="staffPanelCard">
       <h2>{title}</h2>
+      {description && <p className="chartDescription">{description}</p>}
       <div className="groupLegend">
         <span><i className="greenDot" /> Completados</span>
         <span><i className="blueDot" /> En preparación</span>
       </div>
-      <div className="groupedBars">
-        {categories.map((category) => (
-          <div className="groupedBar" key={category}>
-            <div>
-              {statuses.map((status) => (
-                <i key={status} className={status === "Completados" ? "greenBar" : "blueBar"} style={{ height: `${((data[category]?.[status] || 0) / max) * 100}%` }} />
-              ))}
+      <div className="groupedChart">
+        <div className="barAxis">
+          <span>{max}</span>
+          <span>{mid}</span>
+          <span>0</span>
+        </div>
+        <div className="groupedBars">
+          {categories.map((category) => (
+            <div className="groupedBar" key={category}>
+              <div>
+                {statuses.map((status) => (
+                  <i key={status} className={status === "Completados" ? "greenBar" : "blueBar"} style={{ height: `${((data[category]?.[status] || 0) / max) * 100}%` }} />
+                ))}
+              </div>
+              <span>{category}</span>
             </div>
-            <span>{category}</span>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </article>
   );
@@ -119,18 +137,32 @@ function GroupedBars({ title, data }) {
 function LinePanel({ title, data, description }) {
   const entries = Object.entries(data);
   const max = Math.max(1, ...entries.map(([, value]) => value));
+  const points = entries.map(([, value], index) => {
+    const x = entries.length === 1 ? 50 : (index / (entries.length - 1)) * 100;
+    const y = 100 - ((value / max) * 78 + 8);
+    return `${x},${y}`;
+  }).join(" ");
   return (
     <article className="staffPanelCard">
       <h2>{title}</h2>
       {description && <p className="chartDescription">{description}</p>}
-      <div className="lineChart">
-        {entries.map(([label, value]) => (
-          <div key={label} className="linePoint" style={{ "--height": `${(value / max) * 78 + 8}%` }}>
-            <b>{value}</b>
-            <i />
-            <span>{label}</span>
-          </div>
-        ))}
+      <div className="lineChart lineChartConnected">
+        {entries.length > 1 && (
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <polyline points={points} />
+          </svg>
+        )}
+        {entries.map(([label, value], index) => {
+          const x = entries.length === 1 ? 50 : (index / (entries.length - 1)) * 100;
+          const height = (value / max) * 78 + 8;
+          return (
+            <div key={label} className="linePoint" style={{ "--height": `${height}%`, "--x": `${x}%` }}>
+              <b>{value}</b>
+              <i />
+              <span>{label}</span>
+            </div>
+          );
+        })}
       </div>
     </article>
   );

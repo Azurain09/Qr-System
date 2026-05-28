@@ -1998,7 +1998,7 @@ select {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .greenDot,
@@ -2014,6 +2014,25 @@ select {
 .redDot,
 .redBar {
   background: #f43f5e;
+}
+
+.groupedChart {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 8px;
+  align-items: end;
+}
+
+.barAxis {
+  height: 145px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 1px;
+  color: #5f5873;
+  font-size: 11px;
+  font-weight: 900;
+  text-align: right;
 }
 
 .groupedBars {
@@ -2064,6 +2083,28 @@ select {
   padding: 8px 10px 0;
 }
 
+.lineChartConnected {
+  position: relative;
+  display: block;
+  padding: 18px 12px 28px;
+}
+
+.lineChartConnected svg {
+  position: absolute;
+  inset: 18px 20px 42px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.lineChartConnected polyline {
+  fill: none;
+  stroke: #5b1fd1;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
 .chartDescription {
   margin: -4px 0 12px;
   color: #656179;
@@ -2077,6 +2118,16 @@ select {
   grid-template-rows: 1fr auto auto;
   justify-items: center;
   align-items: end;
+}
+
+.lineChartConnected .linePoint {
+  position: absolute;
+  left: var(--x);
+  bottom: 0;
+  width: 52px;
+  height: calc(100% - 32px);
+  transform: translateX(-50%);
+  z-index: 1;
 }
 
 .linePoint b {
@@ -2093,6 +2144,11 @@ select {
   border-radius: 999px;
   background: #5b1fd1;
   box-shadow: 0 0 0 5px rgba(91, 31, 209, 0.12);
+}
+
+.lineChartConnected .linePoint i {
+  position: relative;
+  z-index: 2;
 }
 
 .rankTable table {
@@ -2121,10 +2177,12 @@ select {
 .dailySnapshot {
   margin-top: 16px;
   margin-bottom: 16px;
+  text-align: center;
 }
 
 .compactReport {
-  grid-template-columns: 0.7fr 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 280px));
+  justify-content: center;
 }
 
 .metric,
