@@ -141,25 +141,34 @@ function LinePanel({ title, data, description }) {
     label,
     value,
     x: entries.length === 1 ? 50 : 8 + (index / (entries.length - 1)) * 84,
-    y: 84 - (value / max) * 62,
+    y: 18 + (1 - value / max) * 58,
   }));
-  const polyline = points.map((point) => `${point.x},${point.y}`).join(" ");
   return (
     <article className="staffPanelCard">
       <h2>{title}</h2>
       {description && <p className="chartDescription">{description}</p>}
       <div className="lineChart lineChartConnected">
-        <svg viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label={title}>
-          {points.length > 1 && <polyline points={polyline} />}
-          {points.map((point) => (
-            <g key={point.label}>
-              <text className="lineValue" x={point.x} y={Math.max(8, point.y - 8)}>{point.value}</text>
-              <circle className="lineHalo" cx={point.x} cy={point.y} r="3.4" />
-              <circle className="lineDot" cx={point.x} cy={point.y} r="1.8" />
-              <text className="lineLabel" x={point.x} y="96">{point.label}</text>
-            </g>
-          ))}
-        </svg>
+        {points.slice(0, -1).map((point, index) => {
+          const next = points[index + 1];
+          const dx = next.x - point.x;
+          const dy = next.y - point.y;
+          const length = Math.hypot(dx, dy);
+          const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+          return (
+            <i
+              key={`${point.label}-${next.label}`}
+              className="lineSegment"
+              style={{ "--x": `${point.x}%`, "--y": `${point.y}%`, "--length": `${length}%`, "--angle": `${angle}deg` }}
+            />
+          );
+        })}
+        {points.map((point) => (
+          <div key={point.label} className="linePoint" style={{ "--x": `${point.x}%`, "--y": `${point.y}%` }}>
+            <b>{point.value}</b>
+            <i />
+            <span>{point.label}</span>
+          </div>
+        ))}
       </div>
     </article>
   );
