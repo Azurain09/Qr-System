@@ -22,6 +22,7 @@ const onlyValidRoomInput = (value, currentValue) => {
 };
 const onlyLetters = (value) => value.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]/g, "").replace(/\s{2,}/g, " ");
 const normalizeMessage = (value) => value === "Completar todos los campos" ? REQUIRED_MESSAGE : value;
+const RESET_AFTER_DELIVERY_MS = 3 * 60 * 1000;
 
 const initialDraft = {
   document: "",
@@ -56,6 +57,15 @@ export function GuestApp() {
   const [addingExtras, setAddingExtras] = useState(false);
   const [hasRequestedMore, setHasRequestedMore] = useState(Boolean(stored.hasRequestedMore));
 
+  const resetGuestSession = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    setOrder(null);
+    setAddingExtras(false);
+    setHasRequestedMore(false);
+    setDraft(initialDraft);
+    setStep("document");
+  };
+
   const activeBreakfasts = catalog?.breakfast_types.filter((item) => item.is_active) || [];
   const activeEggs = catalog?.egg_prep_types.filter((item) => item.is_active) || [];
   const allExtras = catalog?.extra_categories.flatMap((category) => category.extras) || [];
@@ -70,9 +80,7 @@ export function GuestApp() {
         setOrder(data);
         setStep(data.confirmed_at ? "status" : "review");
       } catch {
-        localStorage.removeItem(STORAGE_KEY);
-        setOrder(null);
-        setStep("document");
+        resetGuestSession();
       }
     };
     restoreOrder();
@@ -89,14 +97,18 @@ export function GuestApp() {
       setSecondsLeft(left);
       if (left <= 0) {
         clearInterval(timer);
-        setOrder(null);
-        setStep("document");
         setMessage("El pedido expiro. Puedes empezar nuevamente.");
-        localStorage.removeItem(STORAGE_KEY);
+        resetGuestSession();
       }
     }, 1000);
     return () => clearInterval(timer);
   }, [step, order]);
+
+  useEffect(() => {
+    if (step !== "status" || order?.status !== "Entregado") return undefined;
+    const timer = setTimeout(resetGuestSession, RESET_AFTER_DELIVERY_MS);
+    return () => clearTimeout(timer);
+  }, [step, order?.status]);
 
   useEffect(() => {
     if (!order?.id) return;
@@ -624,7 +636,7 @@ export function GuestApp() {
             </div>
             <div className="confirmationMedia">
               <img src={BREAKFAST_IMAGES[selectedBreakfast?.name] || `${ASSET_BASE}/Americano.png`} alt={selectedBreakfast?.name || "Desayuno"} />
-              <div className="deliveryTime"><CalendarClock size={34} /><p><b>Tiempo estimado de entrega:</b><span>15 minutos</span></p></div>
+              <div className="deliveryTime"><CalendarClock size={34} /><p><b>Tiempo estimado de entrega:</b><span>6 minutos</span></p></div>
             </div>
           </div>
           <div className="portalNav reviewActions">
@@ -683,9 +695,7 @@ export function GuestApp() {
         </div>
         <div className="portalNav">
           <button className="portalPrimary navPrimary" onClick={() => {
-            localStorage.removeItem(STORAGE_KEY);
-            setOrder(null);
-            setStep("document");
+            resetGuestSession();
           }}>
             Volver al inicio
           </button>
