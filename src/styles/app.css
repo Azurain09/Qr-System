@@ -874,6 +874,23 @@ a {
   border-color: #ff8a00;
 }
 
+.drinkCard.disabled {
+  opacity: 0.48;
+  filter: grayscale(1);
+  cursor: not-allowed;
+  background: #f3f4f6;
+}
+
+.drinkCard.disabled strong,
+.drinkCard.disabled small {
+  color: #6b7280;
+}
+
+.drinkCard small {
+  font-size: 12px;
+  font-weight: 900;
+}
+
 .drinkGroup.purple .drinkCard.selected {
   border-color: #8b42d6;
 }

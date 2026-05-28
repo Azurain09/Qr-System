@@ -71,6 +71,10 @@ export function GuestApp() {
   const allExtras = catalog?.extra_categories.flatMap((category) => category.extras) || [];
   const selectedBreakfast = activeBreakfasts.find((item) => item.id === Number(draft.breakfast_type_id));
   const selectedEgg = activeEggs.find((egg) => egg.id === Number(draft.egg_prep_type_id));
+  const isIngredientAvailable = (name) => catalog?.ingredients.find((ingredient) => ingredient.name === name)?.is_active !== false;
+  const isDrinkAvailable = (option) => (option.ingredientNames || [option.name]).every(isIngredientAvailable);
+  const availableJuices = JUICE_OPTIONS.filter(isDrinkAvailable);
+  const availableCoffees = COFFEE_OPTIONS.filter(isDrinkAvailable);
 
   useEffect(() => {
     const restoreOrder = async () => {
@@ -109,6 +113,19 @@ export function GuestApp() {
     const timer = setTimeout(resetGuestSession, RESET_AFTER_DELIVERY_MS);
     return () => clearTimeout(timer);
   }, [step, order?.status]);
+
+  useEffect(() => {
+    if (!catalog) return;
+    setDraft((current) => ({
+      ...current,
+      juice_choice: JUICE_OPTIONS.find((option) => option.name === current.juice_choice && isDrinkAvailable(option))
+        ? current.juice_choice
+        : availableJuices[0]?.name || "",
+      coffee_choice: COFFEE_OPTIONS.find((option) => option.name === current.coffee_choice && isDrinkAvailable(option))
+        ? current.coffee_choice
+        : availableCoffees[0]?.name || "",
+    }));
+  }, [catalog]);
 
   useEffect(() => {
     if (!order?.id) return;
@@ -305,6 +322,9 @@ export function GuestApp() {
 
   const validateDrinks = () => {
     if (!draft.juice_choice || !draft.coffee_choice) return "Debe seleccionar un jugo y un cafe";
+    if (!availableJuices.some((option) => option.name === draft.juice_choice) || !availableCoffees.some((option) => option.name === draft.coffee_choice)) {
+      return "Seleccione bebidas disponibles";
+    }
     return "";
   };
 
@@ -587,6 +607,7 @@ export function GuestApp() {
               options={JUICE_OPTIONS}
               value={draft.juice_choice}
               onChange={(name) => setDraft({ ...draft, juice_choice: name })}
+              isOptionDisabled={(option) => !isDrinkAvailable(option)}
               tone="orange"
             />
             <DrinkGroup
@@ -595,6 +616,7 @@ export function GuestApp() {
               options={COFFEE_OPTIONS}
               value={draft.coffee_choice}
               onChange={(name) => setDraft({ ...draft, coffee_choice: name })}
+              isOptionDisabled={(option) => !isDrinkAvailable(option)}
               tone="purple"
             />
           </div>
@@ -705,7 +727,7 @@ export function GuestApp() {
   );
 }
 
-function DrinkGroup({ title, subtitle, options, value, onChange, tone }) {
+function DrinkGroup({ title, subtitle, options, value, onChange, isOptionDisabled, tone }) {
   return (
     <section className={`drinkGroup ${tone}`}>
       <div className="drinkGroupTitle">
@@ -716,13 +738,17 @@ function DrinkGroup({ title, subtitle, options, value, onChange, tone }) {
         </div>
       </div>
       <div className="drinkCards">
-        {options.map((option) => (
-          <button key={option.name} className={`drinkCard ${value === option.name ? "selected" : ""}`} onClick={() => onChange(option.name)}>
-            <img src={option.image} alt={option.name} />
-            <strong>{option.name}</strong>
-            <i />
-          </button>
-        ))}
+        {options.map((option) => {
+          const disabled = isOptionDisabled?.(option) || false;
+          return (
+            <button key={option.name} className={`drinkCard ${value === option.name ? "selected" : ""} ${disabled ? "disabled" : ""}`} disabled={disabled} onClick={() => onChange(option.name)}>
+              <img src={option.image} alt={option.name} />
+              <strong>{option.name}</strong>
+              {disabled && <small>No disponible</small>}
+              <i />
+            </button>
+          );
+        })}
       </div>
     </section>
   );

@@ -33,14 +33,14 @@ export const EGG_DESCRIPTIONS = {
   Escalfados: "Huevos cocidos en agua sin cascara.",
 };
 export const JUICE_OPTIONS = [
-  { name: "Naranja", image: `${ASSET_BASE}/juice-naranja.png`, color: "orange" },
-  { name: "Pina", image: `${ASSET_BASE}/juice-pina.png`, color: "orange" },
-  { name: "Papaya", image: `${ASSET_BASE}/juice-papaya.png`, color: "orange" },
-  { name: "Mango", image: `${ASSET_BASE}/juice-mango.png`, color: "orange" },
+  { name: "Naranja", ingredientNames: ["Naranja"], image: `${ASSET_BASE}/juice-naranja.png`, color: "orange" },
+  { name: "Piña", ingredientNames: ["Pina"], image: `${ASSET_BASE}/juice-pina.png`, color: "orange" },
+  { name: "Papaya", ingredientNames: ["Papaya"], image: `${ASSET_BASE}/juice-papaya.png`, color: "orange" },
+  { name: "Mango", ingredientNames: ["Mango"], image: `${ASSET_BASE}/juice-mango.png`, color: "orange" },
 ];
 export const COFFEE_OPTIONS = [
-  { name: "Cafe Negro", image: `${ASSET_BASE}/coffee-negro.png`, color: "purple" },
-  { name: "Cafe con Leche", image: `${ASSET_BASE}/coffee-leche.png`, color: "purple" },
+  { name: "Cafe Negro", ingredientNames: ["Cafe"], image: `${ASSET_BASE}/coffee-negro.png`, color: "purple" },
+  { name: "Cafe con Leche", ingredientNames: ["Cafe", "Leche"], image: `${ASSET_BASE}/coffee-leche.png`, color: "purple" },
 ];
 export const PURGE_CONFIRMATION = "ELIMINAR PEDIDOS";
 
