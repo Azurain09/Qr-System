@@ -1,19 +1,11 @@
 export const CANCELLATION_REASONS = [
   {
-    title: "Pedido realizado por error",
-    description: "Hice el pedido por equivocacion.",
+    title: "Solicitud del huésped",
+    description: "El huésped solicitó cancelar el pedido verbalmente.",
   },
   {
     title: "Cambios de planes",
     description: "Mis planes han cambiado y ya no necesito el pedido.",
-  },
-  {
-    title: "Tiempo de espera",
-    description: "El tiempo de espera es demasiado largo.",
-  },
-  {
-    title: "Problema con el pedido",
-    description: "Hubo un problema con mi pedido.",
   },
   {
     title: "Otro motivo",
@@ -44,7 +36,7 @@ export const JUICE_OPTIONS = [
   { name: "Naranja", image: `${ASSET_BASE}/juice-naranja.png`, color: "orange" },
   { name: "Pina", image: `${ASSET_BASE}/juice-pina.png`, color: "orange" },
   { name: "Papaya", image: `${ASSET_BASE}/juice-papaya.png`, color: "orange" },
-  { name: "Guayaba", image: `${ASSET_BASE}/juice-guayaba.png`, color: "orange" },
+  { name: "Mango", image: `${ASSET_BASE}/juice-mango.png`, color: "orange" },
 ];
 export const COFFEE_OPTIONS = [
   { name: "Cafe Negro", image: `${ASSET_BASE}/coffee-negro.png`, color: "purple" },
