@@ -6,6 +6,12 @@ import { useCatalog } from "../hooks/useCatalog";
 import { DashboardShell, Field, ServiceClosed } from "../components/ui";
 import { OrderSummary } from "../components/OrderSummary";
 
+const DISPLAY_NAMES = {
+  Pina: "Piña",
+};
+
+const displayName = (name) => DISPLAY_NAMES[name] || name;
+
 export function KitchenPanel() {
   const { catalog, setCatalog, error, reload } = useCatalog();
   const [orders, setOrders] = useState([]);
@@ -231,7 +237,7 @@ function ToggleList({ title, items, kind, onToggle }) {
       <h3>{title}</h3>
       {items.map((item) => (
         <label key={`${kind}-${item.id}`} className="toggleRow">
-          <span>{item.name}</span>
+          <span>{displayName(item.name)}</span>
           <input type="checkbox" checked={item.is_active} onChange={(event) => onToggle(kind, item.id, event.target.checked)} />
         </label>
       ))}
