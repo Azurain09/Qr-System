@@ -137,32 +137,29 @@ function GroupedBars({ title, data, description }) {
 function LinePanel({ title, data, description }) {
   const entries = Object.entries(data);
   const max = Math.max(1, ...entries.map(([, value]) => value));
-  const points = entries.map(([, value], index) => {
-    const x = entries.length === 1 ? 50 : (index / (entries.length - 1)) * 100;
-    const y = 100 - ((value / max) * 78 + 8);
-    return `${x},${y}`;
-  }).join(" ");
+  const points = entries.map(([label, value], index) => ({
+    label,
+    value,
+    x: entries.length === 1 ? 50 : 8 + (index / (entries.length - 1)) * 84,
+    y: 84 - (value / max) * 62,
+  }));
+  const polyline = points.map((point) => `${point.x},${point.y}`).join(" ");
   return (
     <article className="staffPanelCard">
       <h2>{title}</h2>
       {description && <p className="chartDescription">{description}</p>}
       <div className="lineChart lineChartConnected">
-        {entries.length > 1 && (
-          <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            <polyline points={points} />
-          </svg>
-        )}
-        {entries.map(([label, value], index) => {
-          const x = entries.length === 1 ? 50 : (index / (entries.length - 1)) * 100;
-          const height = (value / max) * 78 + 8;
-          return (
-            <div key={label} className="linePoint" style={{ "--height": `${height}%`, "--x": `${x}%` }}>
-              <b>{value}</b>
-              <i />
-              <span>{label}</span>
-            </div>
-          );
-        })}
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label={title}>
+          {points.length > 1 && <polyline points={polyline} />}
+          {points.map((point) => (
+            <g key={point.label}>
+              <text className="lineValue" x={point.x} y={Math.max(8, point.y - 8)}>{point.value}</text>
+              <circle className="lineHalo" cx={point.x} cy={point.y} r="3.4" />
+              <circle className="lineDot" cx={point.x} cy={point.y} r="1.8" />
+              <text className="lineLabel" x={point.x} y="96">{point.label}</text>
+            </g>
+          ))}
+        </svg>
       </div>
     </article>
   );
