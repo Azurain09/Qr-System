@@ -148,20 +148,9 @@ function LinePanel({ title, data, description }) {
       <h2>{title}</h2>
       {description && <p className="chartDescription">{description}</p>}
       <div className="lineChart lineChartConnected">
-        {points.slice(0, -1).map((point, index) => {
-          const next = points[index + 1];
-          const dx = next.x - point.x;
-          const dy = next.y - point.y;
-          const length = Math.hypot(dx, dy);
-          const angle = Math.atan2(dy, dx) * (180 / Math.PI);
-          return (
-            <i
-              key={`${point.label}-${next.label}`}
-              className="lineSegment"
-              style={{ "--x": `${point.x}%`, "--y": `${point.y}%`, "--length": `${length}%`, "--angle": `${angle}deg` }}
-            />
-          );
-        })}
+        <svg className="lineChartPath" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <polyline points={points.map((point) => `${point.x},${point.y}`).join(" ")} />
+        </svg>
         {points.map((point) => (
           <div key={point.label} className="linePoint" style={{ "--x": `${point.x}%`, "--y": `${point.y}%` }}>
             <b>{point.value}</b>

@@ -2086,6 +2086,7 @@ select {
   position: relative;
   display: block;
   padding: 0 0 24px;
+  overflow: hidden;
 }
 
 .chartDescription {
@@ -2095,16 +2096,21 @@ select {
   line-height: 1.4;
 }
 
-.lineSegment {
+.lineChartPath {
   position: absolute;
-  left: var(--x);
-  top: var(--y);
-  width: var(--length);
-  height: 2px;
-  border-radius: 999px;
-  background: #5b1fd1;
-  transform-origin: left center;
-  transform: rotate(var(--angle));
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.lineChartPath polyline {
+  fill: none;
+  stroke: #5b1fd1;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
 }
 
 .linePoint {
