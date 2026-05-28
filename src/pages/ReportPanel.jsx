@@ -43,7 +43,7 @@ export function ReportPanel({ manager = false }) {
   };
 
   return (
-    <DashboardShell title={manager ? "Gerencia" : "Recepcion"} icon={manager ? <Users /> : <ClipboardList />} subtitle={manager ? "Reportes historicos y personal" : "Reportes diarios"}>
+    <DashboardShell className="reportDashboard" title={manager ? "Gerencia" : "Recepcion"} icon={manager ? <Users /> : <ClipboardList />} subtitle={manager ? "Reportes historicos y personal" : "Reportes diarios"}>
       {message && <div className="alert">{message}</div>}
       <section className="reportToolbar">
         <Field label="Fecha">
