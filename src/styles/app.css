@@ -1457,6 +1457,18 @@ select {
   font-weight: 700;
 }
 
+.reportDashboard .staffIntro {
+  text-align: center;
+}
+
+.reportDashboard .reportToolbar {
+  justify-content: center;
+}
+
+.reportDashboard .statCard {
+  justify-content: center;
+}
+
 .dashboardHeader {
   justify-content: flex-start;
 }
@@ -1857,7 +1869,7 @@ select {
 
 .statCards {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
 }
 
@@ -1939,8 +1951,20 @@ select {
 
 .staffCharts {
   display: grid;
-  grid-template-columns: 1.05fr 1.2fr 1.35fr;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 16px;
+}
+
+.staffCharts > .staffPanelCard {
+  grid-column: span 2;
+}
+
+.staffCharts > .staffPanelCard:nth-child(4) {
+  grid-column: 2 / span 2;
+}
+
+.staffCharts > .staffPanelCard:nth-child(5) {
+  grid-column: 4 / span 2;
 }
 
 .staffPanelCard {
@@ -2297,6 +2321,12 @@ select {
   .cancelLayout,
   .purgePanel {
     grid-template-columns: 1fr;
+  }
+
+  .staffCharts > .staffPanelCard,
+  .staffCharts > .staffPanelCard:nth-child(4),
+  .staffCharts > .staffPanelCard:nth-child(5) {
+    grid-column: auto;
   }
 
   .cancelContextItem {

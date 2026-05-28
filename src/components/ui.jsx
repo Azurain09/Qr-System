@@ -78,9 +78,9 @@ export function BackButton({ onClick, children = "Volver" }) {
   );
 }
 
-export function DashboardShell({ title, subtitle, icon, children }) {
+export function DashboardShell({ title, subtitle, icon, children, className = "" }) {
   return (
-    <main className="dashboard">
+    <main className={`dashboard ${className}`}>
       <header className="staffTopbar">
         <div className="portalTitle">
           <span className="portalIcon">{icon}</span>
