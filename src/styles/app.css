@@ -2056,12 +2056,19 @@ select {
 .lineChart {
   height: 202px;
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(46px, 1fr));
   gap: 10px;
   align-items: end;
   border-left: 1px solid #eceaf2;
   border-bottom: 1px solid #eceaf2;
   padding: 8px 10px 0;
+}
+
+.chartDescription {
+  margin: -4px 0 12px;
+  color: #656179;
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 .linePoint {

@@ -23,7 +23,11 @@ export function StaffDashboard({ report }) {
       <div className="staffCharts">
         <PiePanel title="Pedidos por categoria" data={report.category_mix || {}} />
         <GroupedBars title="Pedidos por estado" data={report.status_by_category || {}} />
-        <LinePanel title="Pedidos por dia" data={report.orders_by_day || {}} />
+        <LinePanel
+          title="Pedidos por hora"
+          data={report.orders_by_hour || {}}
+          description="Cantidad de pedidos registrados a lo largo del día según el horario en que fueron realizados."
+        />
         <RankTable title="Productos mas solicitados" columns={["#", "Producto", "Cantidad"]} rows={(report.top_products || []).map((item, index) => [index + 1, item.name, item.quantity])} />
         <RankTable title="Mesas mas activas" columns={["#", "Mesa", "Pedidos"]} rows={(report.active_tables || []).map((item, index) => [index + 1, item.name, item.orders])} />
       </div>
@@ -112,18 +116,19 @@ function GroupedBars({ title, data }) {
   );
 }
 
-function LinePanel({ title, data }) {
+function LinePanel({ title, data, description }) {
   const entries = Object.entries(data);
   const max = Math.max(1, ...entries.map(([, value]) => value));
   return (
     <article className="staffPanelCard">
       <h2>{title}</h2>
+      {description && <p className="chartDescription">{description}</p>}
       <div className="lineChart">
         {entries.map(([label, value]) => (
           <div key={label} className="linePoint" style={{ "--height": `${(value / max) * 78 + 8}%` }}>
             <b>{value}</b>
             <i />
-            <span>{label.slice(5)}</span>
+            <span>{label}</span>
           </div>
         ))}
       </div>
