@@ -15,6 +15,19 @@ export const CANCELLATION_REASONS = [
 
 export const STATUS_FLOW = ["Pendiente", "En preparación", "Entregado"];
 export const ASSET_BASE = "/portal-assets";
+export const DISPLAY_NAMES = {
+  Cafe: "Café",
+  "Cafe Negro": "Café Negro",
+  "Cafe con Leche": "Café con Leche",
+  "Con jamon y queso": "Con jamón y queso",
+  "Solo jamon": "Solo jamón",
+  Dietetico: "Dietético",
+  "Dietetico adicional": "Dietético adicional",
+  Lacteos: "Lácteos",
+  Pina: "Piña",
+  "Yogurt pequeno": "Yogurt pequeño",
+};
+export const displayName = (name) => DISPLAY_NAMES[name] || name;
 export const BREAKFAST_IMAGES = {
   Americano: `${ASSET_BASE}/Americano.png`,
   Continental: `${ASSET_BASE}/Continental.png`,
@@ -28,9 +41,9 @@ export const EGG_IMAGES = {
 };
 export const EGG_DESCRIPTIONS = {
   Fritos: "Huevos fritos en aceite o mantequilla.",
-  Hervidos: "Huevos cocidos en agua hasta la coccion deseada.",
+  Hervidos: "Huevos cocidos en agua hasta la cocción deseada.",
   Revueltos: "Huevos batidos y cocidos a fuego lento.",
-  Escalfados: "Huevos cocidos en agua sin cascara.",
+  Escalfados: "Huevos cocidos en agua sin cáscara.",
 };
 export const JUICE_OPTIONS = [
   { name: "Naranja", ingredientNames: ["Naranja"], image: `${ASSET_BASE}/juice-naranja.png`, color: "orange" },
@@ -39,14 +52,14 @@ export const JUICE_OPTIONS = [
   { name: "Mango", ingredientNames: ["Mango"], image: `${ASSET_BASE}/juice-mango.png`, color: "orange" },
 ];
 export const COFFEE_OPTIONS = [
-  { name: "Cafe Negro", ingredientNames: ["Cafe"], image: `${ASSET_BASE}/coffee-negro.png`, color: "purple" },
-  { name: "Cafe con Leche", ingredientNames: ["Cafe", "Leche"], image: `${ASSET_BASE}/coffee-leche.png`, color: "purple" },
+  { name: "Café Negro", ingredientNames: ["Cafe"], image: `${ASSET_BASE}/coffee-negro.png`, color: "purple" },
+  { name: "Café con Leche", ingredientNames: ["Cafe", "Leche"], image: `${ASSET_BASE}/coffee-leche.png`, color: "purple" },
 ];
 export const PURGE_CONFIRMATION = "ELIMINAR PEDIDOS";
 
 export const INCLUDED_ITEMS = [
   { name: "Jugo", quantity: 1 },
-  { name: "Cafe", quantity: 1 },
+  { name: "Café", quantity: 1 },
 ];
 
 export const EXTRA_PRICES = {

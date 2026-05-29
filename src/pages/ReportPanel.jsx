@@ -43,7 +43,7 @@ export function ReportPanel({ manager = false }) {
   };
 
   return (
-    <DashboardShell className="reportDashboard" title={manager ? "Gerencia" : "Recepcion"} icon={manager ? <Users /> : <ClipboardList />} subtitle={manager ? "Reportes historicos y personal" : "Reportes diarios"}>
+    <DashboardShell className="reportDashboard" title={manager ? "Gerencia" : "Recepción"} icon={manager ? <Users /> : <ClipboardList />} subtitle={manager ? "Reportes históricos y personal" : "Reportes diarios"}>
       {message && <div className="alert">{message}</div>}
       <section className="reportToolbar">
         <Field label="Fecha">
@@ -57,7 +57,7 @@ export function ReportPanel({ manager = false }) {
         <section className="purgePanel">
           <div>
             <h2>Purgar datos</h2>
-            <p>Estás seguro de que deseas eliminar todos los pedidos, detalles, historial y cancelaciones? Esta acción no se puede deshacer.</p>
+            <p>¿Está seguro de que desea eliminar todos los pedidos, detalles, historial y cancelaciones? Esta acción no se puede deshacer.</p>
           </div>
           <Field label="Escriba ELIMINAR PEDIDOS para confirmar">
             <input value={purgeText} onChange={(event) => setPurgeText(event.target.value)} />

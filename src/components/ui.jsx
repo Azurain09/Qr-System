@@ -25,7 +25,7 @@ export function ServiceClosed({ title = "Sistema fuera de servicio" }) {
       <section className="notice">
         <Hotel size={40} />
         <h1>{title}</h1>
-        <p>El horario para huespedes es de 6:00 AM a 11:00 AM. Cocina opera de 5:30 AM a 11:00 AM.</p>
+        <p>El horario para huéspedes es de 6:00 AM a 11:00 AM. Cocina opera de 5:30 AM a 11:00 AM.</p>
       </section>
     </main>
   );

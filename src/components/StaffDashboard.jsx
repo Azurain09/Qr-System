@@ -1,5 +1,6 @@
 import React from "react";
 import { BarChart3, CheckCircle2, ClipboardList, Clock3 } from "lucide-react";
+import { displayName } from "../constants/app";
 
 export function Metric({ title, value }) {
   return (
@@ -22,7 +23,7 @@ export function StaffDashboard({ report }) {
       </div>
       <div className="staffCharts">
         <PiePanel
-          title="Pedidos por categoria"
+          title="Pedidos por categoría"
           data={report.category_mix || {}}
           description="Distribución de pedidos y adicionales agrupados por categoría para identificar qué tipo de producto tiene mayor demanda."
         />
@@ -36,8 +37,8 @@ export function StaffDashboard({ report }) {
           data={report.orders_by_hour || {}}
           description="Cantidad de pedidos registrados a lo largo del día según el horario en que fueron realizados."
         />
-        <RankTable title="Productos mas solicitados" columns={["#", "Producto", "Cantidad"]} rows={(report.top_products || []).map((item, index) => [index + 1, item.name, item.quantity])} />
-        <RankTable title="Mesas mas activas" columns={["#", "Mesa", "Pedidos"]} rows={(report.active_tables || []).map((item, index) => [index + 1, item.name, item.orders])} />
+        <RankTable title="Productos más solicitados" columns={["#", "Producto", "Cantidad"]} rows={(report.top_products || []).map((item, index) => [index + 1, displayName(item.name), item.quantity])} />
+        <RankTable title="Mesas más activas" columns={["#", "Mesa", "Pedidos"]} rows={(report.active_tables || []).map((item, index) => [index + 1, item.name, item.orders])} />
       </div>
     </section>
   );
@@ -46,7 +47,7 @@ export function StaffDashboard({ report }) {
 export function DailySnapshot({ report }) {
   return (
     <section className="dailySnapshot">
-      <h2>Resumen del dia seleccionado</h2>
+      <h2>Resumen del día seleccionado</h2>
       <div className="reportGrid compactReport">
         <Metric title="Pedidos" value={report.total_orders} />
         <Chart title="Origen" data={report.attended_by_origin} />
@@ -90,7 +91,7 @@ function PiePanel({ title, data, description }) {
         <div className="pieChart" style={{ background: `conic-gradient(${gradient})` }} />
         <div className="pieLegend">
           {entries.map(([label, value], index) => (
-            <span key={label}><i style={{ background: colors[index % colors.length] }} /> {label} <b>{Math.round((value / total) * 100)}%</b></span>
+            <span key={label}><i style={{ background: colors[index % colors.length] }} /> {displayName(label)} <b>{Math.round((value / total) * 100)}%</b></span>
           ))}
         </div>
       </div>
@@ -125,7 +126,7 @@ function GroupedBars({ title, data, description }) {
                   <i key={status} className={status === "Completados" ? "greenBar" : "blueBar"} style={{ height: `${((data[category]?.[status] || 0) / max) * 100}%` }} />
                 ))}
               </div>
-              <span>{category}</span>
+              <span>{displayName(category)}</span>
             </div>
           ))}
         </div>
