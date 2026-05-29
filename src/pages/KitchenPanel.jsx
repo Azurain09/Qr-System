@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { ArrowLeft, CalendarClock, ChefHat, Circle, Info, X, XCircle } from "lucide-react";
 import { api, SLUGS, socketUrl } from "../api/client";
-import { CANCELLATION_REASONS, STATUS_FLOW } from "../constants/app";
+import { CANCELLATION_REASONS, STATUS_FLOW, displayName } from "../constants/app";
 import { useCatalog } from "../hooks/useCatalog";
 import { DashboardShell, Field, ServiceClosed } from "../components/ui";
 import { OrderSummary } from "../components/OrderSummary";
-
-const DISPLAY_NAMES = {
-  Pina: "Piña",
-};
-
-const displayName = (name) => DISPLAY_NAMES[name] || name;
 
 export function KitchenPanel() {
   const { catalog, setCatalog, error, reload } = useCatalog();
@@ -91,7 +85,7 @@ export function KitchenPanel() {
 
   const confirmCancellation = async () => {
     if (!cancelReason) {
-      setMessage("Seleccione un motivo de cancelacion");
+      setMessage("Seleccione un motivo de cancelación");
       return;
     }
     try {
@@ -106,11 +100,11 @@ export function KitchenPanel() {
 
   if (cancellingOrder) {
     return (
-      <DashboardShell title="Motivo de cancelacion" icon={<X />} subtitle="Seleccione el motivo antes de cancelar el pedido">
+      <DashboardShell title="Motivo de cancelación" icon={<X />} subtitle="Seleccione el motivo antes de cancelar el pedido">
         {message && <div className="alert">{message}</div>}
         <section className="cancelContext">
-          <InfoItem label="Huesped" value={cancellingOrder.guest_name} />
-          <InfoItem label="Habitacion" value={cancellingOrder.room_number || "-"} />
+          <InfoItem label="Huésped" value={cancellingOrder.guest_name} />
+          <InfoItem label="Habitación" value={cancellingOrder.room_number || "-"} />
           <InfoItem label="Personas registradas" value="2" />
           <InfoItem label="Mesa" value={cancellingOrder.table_number || "-"} />
           <InfoItem label="Horario" value={cancellingOrder.confirmed_at ? new Date(cancellingOrder.confirmed_at).toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit" }) : "-"} />
@@ -131,7 +125,7 @@ export function KitchenPanel() {
           </aside>
           <div className="cancelReasonPanel">
             <h2>¿Por qué desea cancelar este pedido?</h2>
-            <p>Selecciona el motivo que mejor describe tu cancelacion.</p>
+            <p>Selecciona el motivo que mejor describe tu cancelación.</p>
             <div className="cancelReasons">
               {CANCELLATION_REASONS.map((reason) => (
                 <button key={reason.title} className={cancelReason === reason.title ? "selected" : ""} onClick={() => setCancelReason(reason.title)}>
@@ -145,13 +139,13 @@ export function KitchenPanel() {
             </div>
             <div className="cancelWarning">
               <Info size={19} />
-              <span>Tu pedido sera cancelado y se notificara al huesped en su pantalla.</span>
+              <span>Tu pedido será cancelado y se notificará al huésped en su pantalla.</span>
             </div>
             <div className="cancelActions">
               <button className="secondary" onClick={() => { setCancellingOrder(null); setCancelReason(""); }}>
                 No cancelar
               </button>
-              <button className="cancelConfirmButton" onClick={confirmCancellation}>Confirmar cancelacion</button>
+              <button className="cancelConfirmButton" onClick={confirmCancellation}>Confirmar cancelación</button>
             </div>
           </div>
         </section>
@@ -165,7 +159,7 @@ export function KitchenPanel() {
   }
 
   return (
-    <DashboardShell title="Cocina" icon={<ChefHat />} subtitle="Pedidos realizados durante el dia">
+    <DashboardShell title="Cocina" icon={<ChefHat />} subtitle="Pedidos realizados durante el día">
       {message && <div className="alert">{message}</div>}
       <section className="reportToolbar">
         <Field label="Fecha">

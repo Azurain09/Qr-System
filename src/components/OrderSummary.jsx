@@ -1,5 +1,5 @@
 import React from "react";
-import { EXTRA_PRICES, INCLUDED_ITEMS } from "../constants/app";
+import { EXTRA_PRICES, INCLUDED_ITEMS, displayName } from "../constants/app";
 
 export function OrderSummary({ order }) {
   const activeExtras = order.extras?.filter((extra) => !extra.is_cancelled) || [];
@@ -10,15 +10,15 @@ export function OrderSummary({ order }) {
     <div className="summary">
       {order.claimed_included && <strong className="included">DESAYUNO INCLUIDO</strong>}
       <p><b>{order.guest_name}</b> - {order.document}</p>
-      <p>{order.delivery_location} - {order.table_number ? `Mesa ${order.table_number}` : `Habitacion ${order.room_number}`}</p>
-      <p><b>Desayuno:</b> {order.breakfast_type}</p>
+      <p>{order.delivery_location} - {order.table_number ? `Mesa ${order.table_number}` : `Habitación ${order.room_number}`}</p>
+      <p><b>Desayuno:</b> {displayName(order.breakfast_type)}</p>
       {order.egg_prep && <p><b>Huevo:</b> {order.egg_prep}</p>}
       <div className="summaryBlock">
         <b>Incluido sin costo adicional</b>
         <ul>
           {INCLUDED_ITEMS.map((item) => {
             const selected = item.name === "Jugo" ? includedDrinks.juice : includedDrinks.coffee;
-            return <li key={item.name}>{item.quantity} x {selected || item.name}</li>;
+            return <li key={item.name}>{item.quantity} x {displayName(selected || item.name)}</li>;
           })}
         </ul>
       </div>
@@ -30,7 +30,7 @@ export function OrderSummary({ order }) {
               const unitPrice = EXTRA_PRICES[extra.name] || 0;
               return (
                 <li key={extra.id}>
-                  <span>{extra.quantity} x {extra.category_name} - {extra.name}{extra.egg_prep ? ` (${extra.egg_prep})` : ""}</span>
+                  <span>{extra.quantity} x {displayName(extra.category_name)} - {displayName(extra.name)}{extra.egg_prep ? ` (${extra.egg_prep})` : ""}</span>
                   <strong>S/ {(unitPrice * extra.quantity).toFixed(2)}</strong>
                 </li>
               );
