@@ -8,6 +8,7 @@ import { OrderSummary } from "../components/OrderSummary";
 
 const STORAGE_KEY = "hotel_guest_order_session";
 const REQUIRED_MESSAGE = "Completar correctamente todos los campos";
+const GUEST_SESSION_MAX_AGE_MS = 6 * 60 * 60 * 1000;
 const VALID_ROOMS = [
   "201", "202", "203", "204", "205", "206",
   "301", "302", "303", "304", "305", "306",
@@ -27,6 +28,8 @@ const formatBreakfastDescription = (value = "") => value
   .replaceAll("jamon", "jamón")
   .replaceAll("yogurt pequeno", "yogurt pequeño");
 const RESET_AFTER_DELIVERY_MS = 3 * 60 * 1000;
+const RESTAURANT_DELIVERY_MINUTES = 6;
+const ROOM_DELIVERY_MINUTES = 10;
 
 const initialDraft = {
   document: "",
@@ -44,7 +47,13 @@ const initialDraft = {
 
 function readStoredSession() {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    localStorage.removeItem(STORAGE_KEY);
+    const stored = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "{}");
+    if (!stored.savedAt || Date.now() - stored.savedAt > GUEST_SESSION_MAX_AGE_MS) {
+      sessionStorage.removeItem(STORAGE_KEY);
+      return {};
+    }
+    return stored;
   } catch {
     return {};
   }
@@ -63,6 +72,7 @@ export function GuestApp() {
 
   const resetGuestSession = () => {
     localStorage.removeItem(STORAGE_KEY);
+    sessionStorage.removeItem(STORAGE_KEY);
     setOrder(null);
     setAddingExtras(false);
     setHasRequestedMore(false);
@@ -95,7 +105,7 @@ export function GuestApp() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ draft, orderId: order?.id || null, step, hasRequestedMore }));
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ draft, orderId: order?.id || null, step, hasRequestedMore, savedAt: Date.now() }));
   }, [draft, order?.id, step, hasRequestedMore]);
 
   useEffect(() => {
@@ -354,6 +364,7 @@ export function GuestApp() {
   };
 
   const displayOrder = order ? { ...order, included_drinks: includedDrinks } : { ...orderSummary, included_drinks: includedDrinks };
+  const deliveryMinutes = draft.delivery_location === "Habitacion" ? ROOM_DELIVERY_MINUTES : RESTAURANT_DELIVERY_MINUTES;
 
   const extrasScreen = (
     <GuestChrome title="SELECCIÓN DE ADICIONALES" icon={<Coffee size={21} />}>
@@ -676,7 +687,7 @@ export function GuestApp() {
             </div>
             <div className="confirmationMedia">
               <img src={BREAKFAST_IMAGES[selectedBreakfast?.name] || `${ASSET_BASE}/Americano.png`} alt={selectedBreakfast?.name || "Desayuno"} />
-              <div className="deliveryTime"><CalendarClock size={34} /><p><b>Tiempo estimado de entrega:</b><span>6 minutos</span></p></div>
+              <div className="deliveryTime"><CalendarClock size={34} /><p><b>Tiempo estimado de entrega:</b><span>{deliveryMinutes} minutos</span></p></div>
             </div>
           </div>
           <div className="portalNav reviewActions">

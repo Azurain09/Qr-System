@@ -206,9 +206,10 @@ export function KitchenPanel() {
           <h2>Disponibilidad</h2>
           <ToggleList title="Desayunos" kind="breakfast" items={catalog.breakfast_types} onToggle={updateAvailability} />
           <ToggleList title="Huevos" kind="egg" items={catalog.egg_prep_types} onToggle={updateAvailability} />
-          <ToggleList title="Ingredientes" kind="ingredient" items={catalog.ingredients} onToggle={updateAvailability} />
+          <ToggleList title="Ingredientes" kind="ingredient" items={catalog.ingredients} onToggle={updateAvailability} collapsible />
+          <h3 className="availabilitySectionTitle">Adicionales</h3>
           {catalog.extra_categories.map((category) => (
-            <ToggleList key={category.id} title={category.name} kind="extra" items={category.extras} onToggle={updateAvailability} />
+            <ToggleList key={category.id} title={category.name} kind="extra" items={category.extras} onToggle={updateAvailability} collapsible />
           ))}
         </aside>
       </section>
@@ -225,16 +226,35 @@ function InfoItem({ label, value }) {
   );
 }
 
-function ToggleList({ title, items, kind, onToggle }) {
-  return (
-    <div className="toggleGroup">
-      <h3>{title}</h3>
+function ToggleList({ title, items, kind, onToggle, collapsible = false }) {
+  const rows = (
+    <>
       {items.map((item) => (
         <label key={`${kind}-${item.id}`} className="toggleRow">
           <span>{displayName(item.name)}</span>
           <input type="checkbox" checked={item.is_active} onChange={(event) => onToggle(kind, item.id, event.target.checked)} />
         </label>
       ))}
+    </>
+  );
+
+  if (collapsible) {
+    const activeCount = items.filter((item) => item.is_active).length;
+    return (
+      <details className="toggleGroup toggleDropdown">
+        <summary>
+          <span>{displayName(title)}</span>
+          <small>{activeCount}/{items.length} disponibles</small>
+        </summary>
+        {rows}
+      </details>
+    );
+  }
+
+  return (
+    <div className="toggleGroup">
+      <h3>{displayName(title)}</h3>
+      {rows}
     </div>
   );
 }
