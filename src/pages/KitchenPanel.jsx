@@ -204,8 +204,8 @@ export function KitchenPanel() {
 
         <aside className="availability">
           <h2>Disponibilidad</h2>
-          <ToggleList title="Desayunos" kind="breakfast" items={catalog.breakfast_types} onToggle={updateAvailability} />
-          <ToggleList title="Huevos" kind="egg" items={catalog.egg_prep_types} onToggle={updateAvailability} />
+          <ToggleList title="Desayunos" kind="breakfast" items={catalog.breakfast_types} onToggle={updateAvailability} collapsible />
+          <ToggleList title="Huevos" kind="egg" items={catalog.egg_prep_types} onToggle={updateAvailability} collapsible />
           <ToggleList title="Ingredientes" kind="ingredient" items={catalog.ingredients} onToggle={updateAvailability} collapsible />
           <h3 className="availabilitySectionTitle">Adicionales</h3>
           {catalog.extra_categories.map((category) => (
