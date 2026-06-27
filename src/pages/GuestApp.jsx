@@ -271,7 +271,7 @@ export function GuestApp() {
   const updateDrinkQuantity = (current, field, name, delta, maxTotal) => {
     const quantities = { ...(current[field] || {}) };
     const currentQuantity = Number(quantities[name] || 0);
-    const currentTotal = drinkTotal(quantities);
+    const currentTotal = drinkTotal(current.juice_quantities) + drinkTotal(current.coffee_quantities);
     if (delta > 0 && currentTotal >= maxTotal) return current;
     const nextQuantity = Math.max(0, Math.min(2, currentQuantity + delta));
     if (nextQuantity <= 0) delete quantities[name];
@@ -389,8 +389,9 @@ export function GuestApp() {
   const validateDrinks = () => {
     const selectedJuices = Object.entries(draft.juice_quantities || {}).filter(([, quantity]) => Number(quantity) > 0);
     const selectedCoffees = Object.entries(draft.coffee_quantities || {}).filter(([, quantity]) => Number(quantity) > 0);
-    if (!selectedJuices.length || !selectedCoffees.length) return "Debe seleccionar al menos 1 jugo y 1 café";
-    if (drinkTotal(draft.juice_quantities) > 2 || drinkTotal(draft.coffee_quantities) > 2) return "Solo puede seleccionar hasta 2 jugos y 2 cafés";
+    const totalSelectedDrinks = drinkTotal(draft.juice_quantities) + drinkTotal(draft.coffee_quantities);
+    if (!totalSelectedDrinks) return "Debe seleccionar al menos 1 bebida";
+    if (totalSelectedDrinks > 2) return "Solo puede seleccionar hasta 2 bebidas incluidas";
     const availableJuiceNames = new Set(availableJuices.map((option) => option.name));
     const availableCoffeeNames = new Set(availableCoffees.map((option) => option.name));
     if (selectedJuices.some(([name]) => !availableJuiceNames.has(name)) || selectedCoffees.some(([name]) => !availableCoffeeNames.has(name))) {
@@ -413,6 +414,7 @@ export function GuestApp() {
 
   const displayOrder = order ? { ...order, included_drinks: includedDrinks } : { ...orderSummary, included_drinks: includedDrinks };
   const deliveryMinutes = draft.delivery_location === "Habitacion" ? ROOM_DELIVERY_MINUTES : RESTAURANT_DELIVERY_MINUTES;
+  const selectedDrinkTotal = drinkTotal(draft.juice_quantities) + drinkTotal(draft.coffee_quantities);
 
   const extrasScreen = (
     <GuestChrome title="SELECCIÓN DE ADICIONALES" icon={<Coffee size={21} />}>
@@ -675,7 +677,7 @@ export function GuestApp() {
           {contextStrip}
           <div className="portalHeading">
             <h1>Seleccione su bebida</h1>
-            <p>Todos nuestros desayunos incluyen 1 jugo y 1 café.</p>
+            <p>Seleccione hasta 2 bebidas incluidas en su desayuno.</p>
           </div>
           <div className="drinkSelectionGrid">
             <DrinkGroup
@@ -684,6 +686,7 @@ export function GuestApp() {
               options={juiceOptions}
               quantities={draft.juice_quantities}
               maxTotal={2}
+              globalTotal={selectedDrinkTotal}
               onChange={(name, delta) => setDraft((current) => updateDrinkQuantity(current, "juice_quantities", name, delta, 2))}
               isOptionDisabled={(option) => !isDrinkAvailable(option)}
               tone="orange"
@@ -694,6 +697,7 @@ export function GuestApp() {
               options={COFFEE_OPTIONS}
               quantities={draft.coffee_quantities}
               maxTotal={2}
+              globalTotal={selectedDrinkTotal}
               onChange={(name, delta) => setDraft((current) => updateDrinkQuantity(current, "coffee_quantities", name, delta, 2))}
               isOptionDisabled={(option) => !isDrinkAvailable(option)}
               tone="purple"
@@ -806,9 +810,8 @@ export function GuestApp() {
   );
 }
 
-function DrinkGroup({ title, subtitle, options, quantities = {}, maxTotal = 2, onChange, isOptionDisabled, tone }) {
+function DrinkGroup({ title, subtitle, options, quantities = {}, maxTotal = 2, globalTotal = 0, onChange, isOptionDisabled, tone }) {
   const [startIndex, setStartIndex] = useState(0);
-  const total = drinkTotal(quantities);
   const visibleCount = 2;
   const maxStart = Math.max(0, options.length - visibleCount);
   const visibleOptions = options.slice(startIndex, startIndex + visibleCount);
@@ -827,7 +830,7 @@ function DrinkGroup({ title, subtitle, options, quantities = {}, maxTotal = 2, o
           <p>{subtitle}</p>
         </div>
       </div>
-      <div className="drinkLimitCounter">{total}/{maxTotal} seleccionado</div>
+      <div className="drinkLimitCounter">{globalTotal}/{maxTotal} bebidas seleccionadas</div>
       <div className="drinkCarouselShell">
         <button className="drinkArrow" type="button" onClick={() => moveCarousel(-1)} disabled={startIndex === 0} aria-label="Ver bebidas anteriores">
           <ChevronLeft size={22} />
@@ -836,7 +839,7 @@ function DrinkGroup({ title, subtitle, options, quantities = {}, maxTotal = 2, o
           {visibleOptions.map((option) => {
             const quantity = Number(quantities[option.name] || 0);
             const soldOut = isOptionDisabled?.(option) || false;
-            const limitReached = total >= maxTotal && quantity === 0;
+            const limitReached = globalTotal >= maxTotal && quantity === 0;
             const disabled = soldOut || limitReached;
             return (
               <article key={option.name} className={`drinkCard ${quantity > 0 ? "selected" : ""} ${disabled ? "disabled" : ""}`}>
