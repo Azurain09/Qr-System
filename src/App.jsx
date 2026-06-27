@@ -1,5 +1,5 @@
 ﻿import React from "react";
-import { ArrowRight, ClipboardList, Lock, ShieldCheck, Utensils } from "lucide-react";
+import { ArrowRight, ClipboardList, Lock, ShieldCheck, User, Utensils } from "lucide-react";
 import { api, setStaffToken, SLUGS } from "./api/client";
 import { ASSET_BASE } from "./constants/app";
 import { GuestApp } from "./pages/GuestApp";
@@ -25,7 +25,7 @@ function StaffPasswordGate({ title, subtitle, icon, role, children }) {
       setMessage("");
       return;
     } catch (err) {
-      setMessage(err.message || "ContraseÃ±a incorrecta");
+      setMessage(err.message || "Contraseña incorrecta");
     }
   };
 
@@ -54,7 +54,7 @@ function StaffPasswordGate({ title, subtitle, icon, role, children }) {
               <input
                 type="password"
                 value={password}
-                placeholder="ContraseÃ±a"
+                placeholder="Contraseña"
                 autoComplete="current-password"
                 onChange={(event) => setPassword(event.target.value)}
               />
@@ -63,8 +63,8 @@ function StaffPasswordGate({ title, subtitle, icon, role, children }) {
               <ArrowRight size={22} />
               Ingresar
             </button>
-            <PortalInfo>Ingrese el usuario y la contraseÃ±a autorizados para acceder a esta interfaz.</PortalInfo>
-            <div className="loginCopyright">Â© 2025 Cacique Hotel - Todos los derechos reservados</div>
+            <PortalInfo>Ingrese el usuario y la contraseña autorizados para acceder a esta interfaz.</PortalInfo>
+            <div className="loginCopyright">© 2025 Cacique Hotel - Todos los derechos reservados</div>
           </form>
           <img className="loginHotelImage" src={`${ASSET_BASE}/Hotel.webp`} alt="Hotel Cacique" decoding="async" />
         </div>
@@ -74,28 +74,28 @@ function StaffPasswordGate({ title, subtitle, icon, role, children }) {
 }
 
 function IdCardFallback() {
-  return <span className="loginUserIcon">U</span>;
+  return <User className="loginUserIcon" size={19} />;
 }
 
 export function App() {
   const path = window.location.pathname.replace(/^\/+|\/+$/g, "");
   if (path === SLUGS.cook) {
     return (
-      <StaffPasswordGate role="cook" title="COCINA" subtitle="Ingrese usuario y contraseÃ±a para acceder a los pedidos" icon={<Utensils size={21} />}>
+      <StaffPasswordGate role="cook" title="COCINA" subtitle="Ingrese usuario y contraseña para acceder a los pedidos" icon={<Utensils size={21} />}>
         <KitchenPanel />
       </StaffPasswordGate>
     );
   }
   if (path === SLUGS.reception) {
     return (
-      <StaffPasswordGate role="reception" title="RECEPCIÃ“N" subtitle="Ingrese usuario y contraseÃ±a para acceder a los reportes" icon={<ClipboardList size={21} />}>
+      <StaffPasswordGate role="reception" title="RECEPCIÓN" subtitle="Ingrese usuario y contraseña para acceder a los reportes" icon={<ClipboardList size={21} />}>
         <ReportPanel />
       </StaffPasswordGate>
     );
   }
   if (path === SLUGS.manager) {
     return (
-      <StaffPasswordGate role="manager" title="GERENCIA" subtitle="Ingrese usuario y contraseÃ±a para administrar el sistema" icon={<ShieldCheck size={21} />}>
+      <StaffPasswordGate role="manager" title="GERENCIA" subtitle="Ingrese usuario y contraseña para administrar el sistema" icon={<ShieldCheck size={21} />}>
         <ReportPanel manager />
       </StaffPasswordGate>
     );

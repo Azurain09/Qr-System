@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { CheckCircle2, Edit3, Plus, Search, ShieldCheck, UserCheck, UserX, Users } from "lucide-react";
+import { CheckCircle2, Edit3, Plus, Search, UserCheck, UserX } from "lucide-react";
 import { api } from "../api/client";
 
 const EMPTY_FORM = { name: "", dni: "", username: "", password: "", role: "Cocina", is_active: true };
@@ -35,13 +35,6 @@ export function StaffManagement({ onMessage }) {
     const matchesStatus = statusFilter === "Todos" || (statusFilter === "Activos" ? user.is_active : !user.is_active);
     return matchesSearch && matchesRole && matchesStatus;
   }), [users, search, roleFilter, statusFilter]);
-
-  const totals = {
-    all: users.length,
-    active: users.filter((user) => user.is_active).length,
-    inactive: users.filter((user) => !user.is_active).length,
-    roles: new Set(users.map((user) => normalizeRole(user.role))).size,
-  };
 
   const resetForm = () => {
     setForm(EMPTY_FORM);
@@ -89,13 +82,6 @@ export function StaffManagement({ onMessage }) {
           <h2>Gestión de usuarios</h2>
           <p>Administre el personal autorizado y sus roles dentro del sistema.</p>
         </div>
-      </div>
-
-      <div className="userStats">
-        <UserStat icon={<Users />} tone="purple" label="Total de usuarios" value={totals.all} />
-        <UserStat icon={<UserCheck />} tone="green" label="Usuarios activos" value={totals.active} />
-        <UserStat icon={<UserX />} tone="orange" label="Usuarios inactivos" value={totals.inactive} />
-        <UserStat icon={<ShieldCheck />} tone="blue" label="Roles registrados" value={totals.roles} />
       </div>
 
       <form className="userManagementForm" onSubmit={saveUser}>
@@ -162,8 +148,4 @@ export function StaffManagement({ onMessage }) {
       </div>
     </section>
   );
-}
-
-function UserStat({ icon, tone, label, value }) {
-  return <article className={`userStat ${tone}`}><span>{icon}</span><div><small>{label}</small><strong>{value}</strong></div></article>;
 }
