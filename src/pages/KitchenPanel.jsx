@@ -221,6 +221,13 @@ export function KitchenPanel() {
 
         <aside className="availability">
           <h2>Disponibilidad</h2>
+          <ToggleList title="Desayunos" kind="breakfast" items={catalog.breakfast_types} onToggle={updateAvailability} collapsible />
+          <ToggleList title="Huevos" kind="egg" items={catalog.egg_prep_types} onToggle={updateAvailability} collapsible />
+          <ToggleList title="Ingredientes" kind="ingredient" items={catalog.ingredients} onToggle={updateAvailability} collapsible />
+          <h3 className="availabilitySectionTitle">Adicionales</h3>
+          {catalog.extra_categories.map((category) => (
+            <ToggleList key={category.id} title={category.name} kind="extra" items={category.extras} onToggle={updateAvailability} collapsible />
+          ))}
           <form className="catalogCreateForm" onSubmit={createCatalogOption}>
             <h3>Agregar opción</h3>
             <select value={newCatalogItem.kind} onChange={(event) => setNewCatalogItem({ ...newCatalogItem, kind: event.target.value })}>
@@ -233,13 +240,6 @@ export function KitchenPanel() {
             <input value={newCatalogItem.name} placeholder="Nombre de la opción" onChange={(event) => setNewCatalogItem({ ...newCatalogItem, name: event.target.value })} />
             <button type="submit" className="primary">Agregar</button>
           </form>
-          <ToggleList title="Desayunos" kind="breakfast" items={catalog.breakfast_types} onToggle={updateAvailability} collapsible />
-          <ToggleList title="Huevos" kind="egg" items={catalog.egg_prep_types} onToggle={updateAvailability} collapsible />
-          <ToggleList title="Ingredientes" kind="ingredient" items={catalog.ingredients} onToggle={updateAvailability} collapsible />
-          <h3 className="availabilitySectionTitle">Adicionales</h3>
-          {catalog.extra_categories.map((category) => (
-            <ToggleList key={category.id} title={category.name} kind="extra" items={category.extras} onToggle={updateAvailability} collapsible />
-          ))}
         </aside>
       </section>
     </DashboardShell>

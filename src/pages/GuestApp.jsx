@@ -21,12 +21,12 @@ const onlyValidRoomInput = (value, currentValue) => {
   const digits = onlyDigits(value, 3);
   return VALID_ROOMS.some((room) => room.startsWith(digits)) ? digits : currentValue;
 };
-const onlyLetters = (value) => value.replace(/[^A-Za-zÃÃ‰ÃÃ“ÃšÃœÃ‘Ã¡Ã©Ã­Ã³ÃºÃ¼Ã±\s]/g, "").replace(/\s{2,}/g, " ");
+const onlyLetters = (value) => value.replace(/[^\p{L}\s]/gu, "").replace(/\s{2,}/g, " ");
 const normalizeMessage = (value) => value === "Completar todos los campos" ? REQUIRED_MESSAGE : value;
 const formatBreakfastDescription = (value = "") => value
-  .replaceAll("cafe", "cafÃ©")
-  .replaceAll("jamon", "jamÃ³n")
-  .replaceAll("yogurt pequeno", "yogurt pequeÃ±o");
+  .replaceAll("cafe", "café")
+  .replaceAll("jamon", "jamón")
+  .replaceAll("yogurt pequeno", "yogurt pequeño");
 const drinkTotal = (quantities = {}) => Object.values(quantities).reduce((sum, quantity) => sum + Number(quantity || 0), 0);
 const cleanDrinkQuantities = (quantities = {}, options, availableOptions, fallbackName) => {
   const availableNames = new Set(availableOptions.map((option) => option.name));
@@ -58,7 +58,7 @@ const initialDraft = {
   breakfast_type_id: "",
   egg_prep_type_id: "",
   juice_quantities: { Naranja: 1 },
-  coffee_quantities: { "CafÃ© Negro": 1 },
+  coffee_quantities: { "Café Negro": 1 },
   extras: [],
 };
 
@@ -158,7 +158,7 @@ export function GuestApp() {
     setDraft((current) => ({
       ...current,
       juice_quantities: cleanDrinkQuantities(current.juice_quantities, juiceOptions, availableJuices, "Naranja"),
-      coffee_quantities: cleanDrinkQuantities(current.coffee_quantities, COFFEE_OPTIONS, availableCoffees, "CafÃ© Negro"),
+      coffee_quantities: cleanDrinkQuantities(current.coffee_quantities, COFFEE_OPTIONS, availableCoffees, "Café Negro"),
       breakfast_type_id: allBreakfasts.find((item) => item.id === Number(current.breakfast_type_id) && item.is_active)
         ? current.breakfast_type_id
         : "",
@@ -232,7 +232,7 @@ export function GuestApp() {
   };
 
   const validateIdentity = () => {
-    if (!/^\d{8}$/.test(draft.document) || !/^[A-Za-zÃÃ‰ÃÃ“ÃšÃœÃ‘Ã¡Ã©Ã­Ã³ÃºÃ¼Ã±\s]+$/.test(draft.full_name.trim())) return REQUIRED_MESSAGE;
+    if (!/^\d{8}$/.test(draft.document) || !/^[\p{L}\s]+$/u.test(draft.full_name.trim())) return REQUIRED_MESSAGE;
     return "";
   };
 
@@ -385,8 +385,8 @@ export function GuestApp() {
   const validateDrinks = () => {
     const selectedJuices = Object.entries(draft.juice_quantities || {}).filter(([, quantity]) => Number(quantity) > 0);
     const selectedCoffees = Object.entries(draft.coffee_quantities || {}).filter(([, quantity]) => Number(quantity) > 0);
-    if (!selectedJuices.length || !selectedCoffees.length) return "Debe seleccionar al menos 1 jugo y 1 cafÃ©";
-    if (drinkTotal(draft.juice_quantities) > 2 || drinkTotal(draft.coffee_quantities) > 2) return "Solo puede seleccionar hasta 2 jugos y 2 cafÃ©s";
+    if (!selectedJuices.length || !selectedCoffees.length) return "Debe seleccionar al menos 1 jugo y 1 café";
+    if (drinkTotal(draft.juice_quantities) > 2 || drinkTotal(draft.coffee_quantities) > 2) return "Solo puede seleccionar hasta 2 jugos y 2 cafés";
     const availableJuiceNames = new Set(availableJuices.map((option) => option.name));
     const availableCoffeeNames = new Set(availableCoffees.map((option) => option.name));
     if (selectedJuices.some(([name]) => !availableJuiceNames.has(name)) || selectedCoffees.some(([name]) => !availableCoffeeNames.has(name))) {
@@ -397,11 +397,11 @@ export function GuestApp() {
 
   const contextStrip = (
     <div className="guestContext referenceContext">
-      <span><Users size={25} /><b>HuÃ©sped:</b><strong>{draft.full_name || order?.guest_name}</strong></span>
-      <span><DoorOpen size={26} /><b>{draft.delivery_location === "Habitacion" ? "HabitaciÃ³n:" : "Mesa:"}</b><strong>{draft.delivery_location === "Habitacion" ? (draft.room_number || order?.room_number || "-") : (draft.table_number || order?.table_number || "-")}</strong></span>
+      <span><Users size={25} /><b>Huésped:</b><strong>{draft.full_name || order?.guest_name}</strong></span>
+      <span><DoorOpen size={26} /><b>{draft.delivery_location === "Habitacion" ? "Habitación:" : "Mesa:"}</b><strong>{draft.delivery_location === "Habitacion" ? (draft.room_number || order?.room_number || "-") : (draft.table_number || order?.table_number || "-")}</strong></span>
       <span><Users size={25} /><b>Personas registradas:</b><strong>2</strong></span>
       {selectedBreakfast && <span><EggFried size={25} /><b>Desayuno seleccionado:</b><strong>{displayName(selectedBreakfast.name)}</strong></span>}
-      {selectedEgg && <span><Coffee size={25} /><b>PreparaciÃ³n de huevos:</b><strong>{selectedEgg.name}</strong></span>}
+      {selectedEgg && <span><Coffee size={25} /><b>Preparación de huevos:</b><strong>{selectedEgg.name}</strong></span>}
     </div>
   );
 
@@ -411,12 +411,12 @@ export function GuestApp() {
   const deliveryMinutes = draft.delivery_location === "Habitacion" ? ROOM_DELIVERY_MINUTES : RESTAURANT_DELIVERY_MINUTES;
 
   const extrasScreen = (
-    <GuestChrome title="SELECCIÃ“N DE ADICIONALES" icon={<Coffee size={21} />}>
+    <GuestChrome title="SELECCIÓN DE ADICIONALES" icon={<Coffee size={21} />}>
       <section className="breakfastScreen">
         {sharedMessages}
         {contextStrip}
         <div className="portalHeading">
-          <h1>{addingExtras ? "Agrega mÃ¡s adicionales" : "Seleccione adicionales"}</h1>
+          <h1>{addingExtras ? "Agrega más adicionales" : "Seleccione adicionales"}</h1>
         </div>
         <section className="extrasPanel standaloneExtras">
           {catalog.extra_categories.map((category) => {
@@ -468,7 +468,7 @@ export function GuestApp() {
 
   if (step === "document") {
     return (
-      <GuestChrome title="INICIO DE SESIÃ“N" icon={<Users size={21} />} footer={false} className="loginPortal">
+      <GuestChrome title="INICIO DE SESIÓN" icon={<Users size={21} />} footer={false} className="loginPortal">
         <section className="documentScreen loginReferenceScreen">
           {sharedMessages}
           <div className="loginSplitCard">
@@ -482,8 +482,8 @@ export function GuestApp() {
               <button className="portalPrimary loginButton" onClick={continueFromDocument}>
                 <ArrowRight size={20} /> Validar
               </button>
-              <PortalInfo>AsegÃºrese de ingresar correctamente su nÃºmero de documento. No utilice puntos ni espacios.</PortalInfo>
-              <div className="loginCopyright">Â© 2025 Cacique Hotel - Todos los derechos reservados</div>
+              <PortalInfo>Asegúrese de ingresar correctamente su número de documento. No utilice puntos ni espacios.</PortalInfo>
+              <div className="loginCopyright">© 2025 Cacique Hotel - Todos los derechos reservados</div>
             </div>
             <img className="loginHotelImage" src={`${ASSET_BASE}/Hotel.webp`} alt="Hotel Cacique" decoding="async" />
           </div>
@@ -494,11 +494,11 @@ export function GuestApp() {
 
   if (step === "identity") {
     return (
-      <GuestChrome title="SELECCIÃ“N DE UBICACIÃ“N" icon={<MapPin size={22} />}>
+      <GuestChrome title="SELECCIÓN DE UBICACIÓN" icon={<MapPin size={22} />}>
         <section className="locationScreen">
           {sharedMessages}
           <div className="portalHeading">
-            <h1>Seleccione su ubicaciÃ³n actual</h1>
+            <h1>Seleccione su ubicación actual</h1>
             <p>Complete sus datos para realizar su pedido de desayuno.</p>
           </div>
           <div className="guestDetailsCard">
@@ -518,8 +518,8 @@ export function GuestApp() {
             </button>
             <button className={`locationCard room ${draft.delivery_location === "Habitacion" ? "selected" : ""}`} onClick={() => setDraft({ ...draft, delivery_location: "Habitacion" })}>
               <span><Bed size={72} /></span>
-              <strong>HabitaciÃ³n</strong>
-              <p>Realizar pedido desde su habitaciÃ³n</p>
+              <strong>Habitación</strong>
+              <p>Realizar pedido desde su habitación</p>
             </button>
           </div>
           <div className="portalNav">
@@ -542,26 +542,26 @@ export function GuestApp() {
 
   if (step === "locationDetail") {
     return (
-      <GuestChrome title={draft.delivery_location === "Restaurante" ? "SELECCIÃ“N DE MESA" : "SELECCIÃ“N DE HABITACIÃ“N"} icon={draft.delivery_location === "Restaurante" ? <Utensils size={21} /> : <Bed size={21} />}>
+      <GuestChrome title={draft.delivery_location === "Restaurante" ? "SELECCIÓN DE MESA" : "SELECCIÓN DE HABITACIÓN"} icon={draft.delivery_location === "Restaurante" ? <Utensils size={21} /> : <Bed size={21} />}>
         <section className="locationScreen">
           {sharedMessages}
           <div className="locationDetailPanel">
             <div className="locationDetailCopy">
-              <h2>{draft.delivery_location === "Restaurante" ? "Ingrese nÃºmero de mesa" : "Ingrese nÃºmero de habitaciÃ³n"}</h2>
+              <h2>{draft.delivery_location === "Restaurante" ? "Ingrese número de mesa" : "Ingrese número de habitación"}</h2>
               {draft.delivery_location === "Restaurante" ? (
-                <Field label="NÃºmero de mesa">
+                <Field label="Número de mesa">
                   <select value={draft.table_number} onChange={(event) => setDraft({ ...draft, table_number: event.target.value })}>
                     <option value="">Seleccionar</option>
                     {[1, 2, 3, 4, 5, 6, 7].map((number) => <option key={number}>{number}</option>)}
                   </select>
                 </Field>
               ) : (
-                <Field label="HabitaciÃ³n">
+                <Field label="Habitación">
                   <input value={draft.room_number} inputMode="numeric" maxLength="3" placeholder="Ejemplo: 203" onChange={(event) => setDraft({ ...draft, room_number: onlyValidRoomInput(event.target.value, draft.room_number) })} />
                 </Field>
               )}
-              <p className="hintText">{draft.delivery_location === "Restaurante" ? "Solo se permiten nÃºmeros del 1 al 7" : "Ingrese una habitaciÃ³n disponible"}</p>
-              <PortalInfo>{draft.delivery_location === "Restaurante" ? "AsegÃºrese de ingresar el nÃºmero correcto de su mesa." : "AsegÃºrese de ingresar correctamente el nÃºmero de su habitaciÃ³n."}</PortalInfo>
+              <p className="hintText">{draft.delivery_location === "Restaurante" ? "Solo se permiten números del 1 al 7" : "Ingrese una habitación disponible"}</p>
+              <PortalInfo>{draft.delivery_location === "Restaurante" ? "Asegúrese de ingresar el número correcto de su mesa." : "Asegúrese de ingresar correctamente el número de su habitación."}</PortalInfo>
             </div>
             <img className="locationPhoto" src={`${ASSET_BASE}/${draft.delivery_location === "Restaurante" ? "tables.webp" : "room.webp"}`} alt={draft.delivery_location} loading="lazy" decoding="async" />
           </div>
@@ -585,7 +585,7 @@ export function GuestApp() {
 
   if (step === "breakfast") {
     return (
-      <GuestChrome title="SELECCIÃ“N DE DESAYUNO" icon={<ChefHat size={21} />}>
+      <GuestChrome title="SELECCIÓN DE DESAYUNO" icon={<ChefHat size={21} />}>
         <section className="breakfastScreen">
           {sharedMessages}
           {contextStrip}
@@ -624,15 +624,15 @@ export function GuestApp() {
 
   if (step === "egg") {
     return (
-      <GuestChrome title="SELECCIÃ“N DE PREPARACIÃ“N DE HUEVOS" icon={<EggFried size={21} />}>
+      <GuestChrome title="SELECCIÓN DE PREPARACIÓN DE HUEVOS" icon={<EggFried size={21} />}>
         <section className="breakfastScreen">
           {sharedMessages}
           {contextStrip}
           <div className="portalHeading">
-            <h1>Seleccione la preparaciÃ³n de sus huevos</h1>
-            <p>Este desayuno incluye huevos, por favor elija cÃ³mo desea que los preparemos.</p>
+            <h1>Seleccione la preparación de sus huevos</h1>
+            <p>Este desayuno incluye huevos, por favor elija cómo desea que los preparemos.</p>
           </div>
-          <div className="inlineNotice"><Info size={22} /><b>Importante:</b><span>Debe seleccionar una opciÃ³n de preparaciÃ³n.</span></div>
+          <div className="inlineNotice"><Info size={22} /><b>Importante:</b><span>Debe seleccionar una opción de preparación.</span></div>
           <div className="eggChoiceGrid">
             {activeEggs.map((egg) => (
               <button key={egg.id} className={`eggChoice ${Number(draft.egg_prep_type_id) === egg.id ? "selected" : ""}`} onClick={() => setDraft({ ...draft, egg_prep_type_id: egg.id })}>
@@ -640,7 +640,7 @@ export function GuestApp() {
                 <div>
                   <span><EggFried size={24} /></span>
                   <strong>{egg.name}</strong>
-                  <p>{EGG_DESCRIPTIONS[egg.name] || "PreparaciÃ³n de huevos."}</p>
+                  <p>{EGG_DESCRIPTIONS[egg.name] || "Preparación de huevos."}</p>
                 </div>
                 <i />
               </button>
@@ -665,13 +665,13 @@ export function GuestApp() {
 
   if (step === "drinks") {
     return (
-      <GuestChrome title="SELECCIÃ“N DE BEBIDAS" icon={<Coffee size={21} />}>
+      <GuestChrome title="SELECCIÓN DE BEBIDAS" icon={<Coffee size={21} />}>
         <section className="breakfastScreen">
           {sharedMessages}
           {contextStrip}
           <div className="portalHeading">
             <h1>Seleccione su bebida</h1>
-            <p>Todos nuestros desayunos incluyen 1 jugo y 1 cafÃ©.</p>
+            <p>Todos nuestros desayunos incluyen 1 jugo y 1 café.</p>
           </div>
           <div className="drinkSelectionGrid">
             <DrinkGroup
@@ -685,8 +685,8 @@ export function GuestApp() {
               tone="orange"
             />
             <DrinkGroup
-              title="CafÃ©"
-              subtitle="Seleccione hasta 2 cafÃ©s"
+              title="Café"
+              subtitle="Seleccione hasta 2 cafés"
               options={COFFEE_OPTIONS}
               quantities={draft.coffee_quantities}
               maxTotal={2}
@@ -695,7 +695,7 @@ export function GuestApp() {
               tone="purple"
             />
           </div>
-          <div className="inlineNotice drinksNotice"><Info size={22} /><b>Importante:</b><span>Las bebidas seleccionadas estÃ¡n incluidas en su desayuno. No tienen costo adicional.</span></div>
+          <div className="inlineNotice drinksNotice"><Info size={22} /><b>Importante:</b><span>Las bebidas seleccionadas están incluidas en su desayuno. No tienen costo adicional.</span></div>
           <div className="portalNav">
             <BackButton onClick={() => setStep(selectedBreakfast?.has_eggs ? "egg" : "breakfast")} />
             <button className="portalPrimary navPrimary" onClick={() => {
@@ -724,7 +724,7 @@ export function GuestApp() {
           {contextStrip}
           <div className="portalHeading">
             <h1>Revise los detalles de su pedido</h1>
-            <p>Por favor verifique que toda la informaciÃ³n sea correcta antes de confirmar.</p>
+            <p>Por favor verifique que toda la información sea correcta antes de confirmar.</p>
           </div>
           <div className="confirmationLayout">
             <div className="documentCard compactCard orderSummaryCard">
@@ -763,7 +763,7 @@ export function GuestApp() {
                 <div className="statusTrack portalStatus">
                   {STATUS_FLOW.map((status) => <span key={status} className={STATUS_FLOW.indexOf(order.status) >= STATUS_FLOW.indexOf(status) ? "done" : ""}>{status}</span>)}
                 </div>
-                {order.status === "Entregado" && <p className="deliveredThanks">Su desayuno ha sido entregado. Â¡Buen provecho!</p>}
+                {order.status === "Entregado" && <p className="deliveredThanks">Su desayuno ha sido entregado. ¡Buen provecho!</p>}
               </>
             )}
             <OrderSummary order={displayOrder} />
@@ -773,7 +773,7 @@ export function GuestApp() {
                 setAddingExtras(true);
                 setStep("extras");
               }}>
-                Â¿Desea agregar algo mÃ¡s a su pedido?
+                ¿Desea agregar algo más a su pedido?
               </button>
             )}
           </div>
@@ -783,11 +783,11 @@ export function GuestApp() {
   }
 
   return (
-    <GuestChrome title="INICIO DE SESIÃ“N" icon={<Users size={21} />} footer={false} className="loginPortal">
+    <GuestChrome title="INICIO DE SESIÓN" icon={<Users size={21} />} footer={false} className="loginPortal">
       <section className="documentScreen loginReferenceScreen">
         {sharedMessages}
         <div className="portalHeading">
-          <h1>Estamos preparando tu sesiÃ³n</h1>
+          <h1>Estamos preparando tu sesión</h1>
           <p>Si la pantalla no avanza, vuelve a ingresar tu DNI.</p>
         </div>
         <div className="portalNav">

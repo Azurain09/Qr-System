@@ -229,13 +229,8 @@ a {
 .loginUserIcon {
   width: 22px;
   height: 22px;
-  border-radius: 999px;
-  display: grid;
-  place-items: center;
-  font-size: 12px;
-  font-weight: 900;
-  background: #1e0b43;
-  color: #fff;
+  color: #5b2be0;
+  stroke-width: 2.6;
 }
 
 .documentCard {
