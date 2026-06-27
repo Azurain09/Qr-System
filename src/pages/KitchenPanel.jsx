@@ -256,24 +256,36 @@ function InfoItem({ label, value }) {
 }
 
 function ToggleList({ title, items, kind, onToggle, collapsible = false }) {
+  const groupedItems = Array.from(items.reduce((map, item) => {
+    const label = displayName(item.name);
+    const group = map.get(label) || { label, items: [] };
+    group.items.push(item);
+    map.set(label, group);
+    return map;
+  }, new Map()).values());
+
   const rows = (
     <>
-      {items.map((item) => (
-        <label key={`${kind}-${item.id}`} className="toggleRow">
-          <span>{displayName(item.name)}</span>
-          <input type="checkbox" checked={item.is_active} onChange={(event) => onToggle(kind, item.id, event.target.checked)} />
+      {groupedItems.map((group) => (
+        <label key={`${kind}-${group.label}`} className="toggleRow">
+          <span>{group.label}</span>
+          <input
+            type="checkbox"
+            checked={group.items.some((item) => item.is_active)}
+            onChange={(event) => group.items.forEach((item) => onToggle(kind, item.id, event.target.checked))}
+          />
         </label>
       ))}
     </>
   );
 
   if (collapsible) {
-    const activeCount = items.filter((item) => item.is_active).length;
+    const activeCount = groupedItems.filter((group) => group.items.some((item) => item.is_active)).length;
     return (
       <details className="toggleGroup toggleDropdown">
         <summary>
           <span>{displayName(title)}</span>
-          <small>{activeCount}/{items.length} disponibles</small>
+          <small>{activeCount}/{groupedItems.length} disponibles</small>
         </summary>
         {rows}
       </details>
