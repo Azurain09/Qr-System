@@ -28,6 +28,7 @@ export const DISPLAY_NAMES = {
   Melon: "Melón",
   Sandia: "Sandía",
   Surtido: "Surtido",
+  "Mixto de la casa": "Surtido",
   "Yogurt pequeno": "Yogurt pequeño",
 };
 export const displayName = (name) => DISPLAY_NAMES[name] || name;

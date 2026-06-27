@@ -1,5 +1,5 @@
 ﻿import React, { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Bed, CalendarClock, ChefHat, ClipboardList, Coffee, DoorOpen, EggFried, IdCard, Info, MapPin, Minus, Plus, Users, Utensils, XCircle } from "lucide-react";
+import { ArrowRight, Bed, CalendarClock, ChefHat, ChevronLeft, ChevronRight, ClipboardList, Coffee, DoorOpen, EggFried, IdCard, Info, MapPin, Minus, Plus, Users, Utensils, XCircle } from "lucide-react";
 import { api, socketUrl } from "../api/client";
 import { ASSET_BASE, BREAKFAST_IMAGES, COFFEE_OPTIONS, EGG_DESCRIPTIONS, EGG_IMAGES, EXTRA_PRICES, JUICE_OPTIONS, STATUS_FLOW, displayName } from "../constants/app";
 import { useCatalog } from "../hooks/useCatalog";
@@ -36,10 +36,9 @@ const cleanDrinkQuantities = (quantities = {}, options, availableOptions, fallba
     const safeQuantity = Math.max(0, Math.min(2, Number(quantity || 0)));
     if (safeQuantity > 0 && optionNames.has(name) && availableNames.has(name)) next[name] = safeQuantity;
   });
-  if (!Object.keys(next).length && availableNames.has(fallbackName)) next[fallbackName] = 1;
-  else if (!Object.keys(next).length && availableOptions[0]) next[availableOptions[0].name] = 1;
   return next;
 };
+const normalizeJuiceName = (name = "") => name === "Mixto de la casa" ? "Surtido" : name;
 const optionImageFor = (options, name, fallback) => {
   const direct = options.find((option) => option.name === name || option.ingredientNames?.includes(name));
   return direct?.image || fallback;
@@ -57,8 +56,8 @@ const initialDraft = {
   claimed_included: true,
   breakfast_type_id: "",
   egg_prep_type_id: "",
-  juice_quantities: { Naranja: 1 },
-  coffee_quantities: { "Café Negro": 1 },
+  juice_quantities: {},
+  coffee_quantities: {},
   extras: [],
 };
 
@@ -101,13 +100,18 @@ export function GuestApp() {
   const activeEggs = catalog?.egg_prep_types.filter((item) => item.is_active) || [];
   const allExtras = catalog?.extra_categories.flatMap((category) => category.extras) || [];
   const juiceCategory = catalog?.extra_categories.find((category) => category.name === "Jugos");
-  const juiceOptions = (juiceCategory?.extras || []).map((extra) => ({
-    name: extra.name,
-    ingredientNames: [extra.name],
-    image: optionImageFor(JUICE_OPTIONS, extra.name, `${ASSET_BASE}/juice-surtido.webp`),
-    color: "orange",
-    catalogActive: extra.is_active,
-  }));
+  const juiceOptions = Array.from((juiceCategory?.extras || []).reduce((map, extra) => {
+    const name = normalizeJuiceName(extra.name);
+    const current = map.get(name);
+    map.set(name, {
+      name,
+      ingredientNames: Array.from(new Set([...(current?.ingredientNames || []), extra.name, name])),
+      image: optionImageFor(JUICE_OPTIONS, name, `${ASSET_BASE}/juice-surtido.webp`),
+      color: "orange",
+      catalogActive: (current?.catalogActive ?? false) || extra.is_active,
+    });
+    return map;
+  }, new Map()).values());
   const selectedBreakfast = allBreakfasts.find((item) => item.id === Number(draft.breakfast_type_id));
   const selectedEgg = activeEggs.find((egg) => egg.id === Number(draft.egg_prep_type_id));
   const isIngredientAvailable = (name) => catalog?.ingredients.find((ingredient) => ingredient.name === name)?.is_active !== false;
@@ -803,7 +807,17 @@ export function GuestApp() {
 }
 
 function DrinkGroup({ title, subtitle, options, quantities = {}, maxTotal = 2, onChange, isOptionDisabled, tone }) {
+  const [startIndex, setStartIndex] = useState(0);
   const total = drinkTotal(quantities);
+  const visibleCount = 2;
+  const maxStart = Math.max(0, options.length - visibleCount);
+  const visibleOptions = options.slice(startIndex, startIndex + visibleCount);
+  const moveCarousel = (delta) => setStartIndex((current) => Math.min(maxStart, Math.max(0, current + delta)));
+
+  useEffect(() => {
+    setStartIndex((current) => Math.min(current, maxStart));
+  }, [maxStart]);
+
   return (
     <section className={`drinkGroup ${tone}`}>
       <div className="drinkGroupTitle">
@@ -814,26 +828,34 @@ function DrinkGroup({ title, subtitle, options, quantities = {}, maxTotal = 2, o
         </div>
       </div>
       <div className="drinkLimitCounter">{total}/{maxTotal} seleccionado</div>
-      <div className="drinkCards drinkCarousel">
-        {options.map((option) => {
-          const quantity = Number(quantities[option.name] || 0);
-          const soldOut = isOptionDisabled?.(option) || false;
-          const limitReached = total >= maxTotal && quantity === 0;
-          const disabled = soldOut || limitReached;
-          return (
-            <article key={option.name} className={`drinkCard ${quantity > 0 ? "selected" : ""} ${disabled ? "disabled" : ""}`}>
-              <img src={option.image} alt={option.name} loading="lazy" decoding="async" />
-              <strong>{displayName(option.name)}</strong>
-              {soldOut && <small>Agotado</small>}
-              {!soldOut && limitReached && <small>No disponible</small>}
-              <div className="drinkStepper">
-                <button type="button" disabled={quantity <= 0} onClick={() => onChange(option.name, -1)}><Minus size={15} /></button>
-                <b>{quantity}</b>
-                <button type="button" disabled={disabled} onClick={() => onChange(option.name, 1)}><Plus size={15} /></button>
-              </div>
-            </article>
-          );
-        })}
+      <div className="drinkCarouselShell">
+        <button className="drinkArrow" type="button" onClick={() => moveCarousel(-1)} disabled={startIndex === 0} aria-label="Ver bebidas anteriores">
+          <ChevronLeft size={22} />
+        </button>
+        <div className="drinkCards drinkCarouselWindow">
+          {visibleOptions.map((option) => {
+            const quantity = Number(quantities[option.name] || 0);
+            const soldOut = isOptionDisabled?.(option) || false;
+            const limitReached = total >= maxTotal && quantity === 0;
+            const disabled = soldOut || limitReached;
+            return (
+              <article key={option.name} className={`drinkCard ${quantity > 0 ? "selected" : ""} ${disabled ? "disabled" : ""}`}>
+                <img src={option.image} alt={option.name} loading="lazy" decoding="async" />
+                <strong>{displayName(option.name)}</strong>
+                {soldOut && <small>Agotado</small>}
+                {!soldOut && limitReached && <small>No disponible</small>}
+                <div className="drinkStepper">
+                  <button type="button" disabled={quantity <= 0} onClick={() => onChange(option.name, -1)}><Minus size={15} /></button>
+                  <b>{quantity}</b>
+                  <button type="button" disabled={disabled} onClick={() => onChange(option.name, 1)}><Plus size={15} /></button>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+        <button className="drinkArrow" type="button" onClick={() => moveCarousel(1)} disabled={startIndex >= maxStart} aria-label="Ver más bebidas">
+          <ChevronRight size={22} />
+        </button>
       </div>
     </section>
   );
