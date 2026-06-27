@@ -15,15 +15,48 @@ export const SLUGS = {
   manager: "gerencia-cacique-9051",
 };
 
-export function socketUrl(path) {
+const STAFF_TOKEN_KEYS = {
+  cook: "qr_staff_token_cook",
+  reception: "qr_staff_token_reception",
+  manager: "qr_staff_token_manager",
+};
+
+function roleFromPath(path) {
+  if (path.includes(SLUGS.cook)) return "cook";
+  if (path.includes(SLUGS.reception)) return "reception";
+  if (path.includes(SLUGS.manager)) return "manager";
+  return null;
+}
+
+export function getStaffToken(role) {
+  return role ? localStorage.getItem(STAFF_TOKEN_KEYS[role]) : null;
+}
+
+export function setStaffToken(role, token) {
+  if (role && token) localStorage.setItem(STAFF_TOKEN_KEYS[role], token);
+}
+
+export function clearStaffToken(role) {
+  if (role) localStorage.removeItem(STAFF_TOKEN_KEYS[role]);
+}
+
+export function socketUrl(path, role) {
   const base = API_URL.replace(/^http/, "ws");
-  return `${base}${path}`;
+  const token = getStaffToken(role);
+  if (!token) return `${base}${path}`;
+  const separator = path.includes("?") ? "&" : "?";
+  return `${base}${path}${separator}token=${encodeURIComponent(token)}`;
 }
 
 async function request(path, options = {}) {
+  const role = options.staffRole || roleFromPath(path);
+  const token = getStaffToken(role);
+  const headers = { "Content-Type": "application/json", ...NGROK_BYPASS_HEADERS, ...(options.headers || {}) };
+  if (token) headers["X-Staff-Token"] = token;
+  const { staffRole, ...fetchOptions } = options;
   const response = await fetch(`${API_URL}${path}`, {
-    headers: { "Content-Type": "application/json", ...NGROK_BYPASS_HEADERS, ...(options.headers || {}) },
-    ...options,
+    headers,
+    ...fetchOptions,
   });
   if (!response.ok) {
     let message = "No se pudo completar la accion";
@@ -40,6 +73,7 @@ async function request(path, options = {}) {
 }
 
 export const api = {
+  staffLogin: (role, username, password) => request("/auth/staff", { method: "POST", body: JSON.stringify({ role, username, password }) }),
   catalog: () => request("/catalog"),
   createOrder: (payload) => request("/orders", { method: "POST", body: JSON.stringify(payload) }),
   confirmOrder: (orderId) => request(`/orders/${orderId}/confirm`, { method: "POST" }),
@@ -56,6 +90,11 @@ export const api = {
       method: "PATCH",
       body: JSON.stringify({ is_active }),
     }),
+  createCatalogItem: (kind, name) =>
+    request(`/staff/${SLUGS.cook}/catalog-items`, {
+      method: "POST",
+      body: JSON.stringify({ kind, name }),
+    }),
   report: (slug, date) => request(`/reports/${slug}/daily${date ? `?date=${date}` : ""}`),
   dashboardReport: (slug, date) => request(`/reports/${slug}/dashboard${date ? `?date=${date}` : ""}`),
   staff: () => request(`/manager/${SLUGS.manager}/staff`),
@@ -70,5 +109,11 @@ export const api = {
 };
 
 export function excelUrl(slug, date) {
-  return `${API_URL}/reports/${slug}/daily.xlsx${date ? `?date=${date}` : ""}`;
+  const role = slug === SLUGS.manager ? "manager" : "reception";
+  const params = new URLSearchParams();
+  if (date) params.set("date", date);
+  const token = getStaffToken(role);
+  if (token) params.set("token", token);
+  const query = params.toString();
+  return `${API_URL}/reports/${slug}/daily.xlsx${query ? `?${query}` : ""}`;
 }

@@ -4,6 +4,7 @@ import { api, excelUrl, SLUGS } from "../api/client";
 import { PURGE_CONFIRMATION } from "../constants/app";
 import { DashboardShell, Field } from "../components/ui";
 import { DailySnapshot, StaffDashboard } from "../components/StaffDashboard";
+import { StaffManagement } from "../components/StaffManagement";
 
 export function ReportPanel({ manager = false }) {
   const slug = manager ? SLUGS.manager : SLUGS.reception;
@@ -53,6 +54,7 @@ export function ReportPanel({ manager = false }) {
       </section>
       {dashboardReport && <StaffDashboard report={dashboardReport} />}
       {report && <DailySnapshot report={report} />}
+      {manager && <StaffManagement onMessage={setMessage} />}
       {manager && (
         <section className="purgePanel">
           <div>
