@@ -15,6 +15,7 @@ export function KitchenPanel() {
   const [cancellingOrder, setCancellingOrder] = useState(null);
   const [cancelReason, setCancelReason] = useState("");
   const [updatedOrders, setUpdatedOrders] = useState({});
+  const [newCatalogItem, setNewCatalogItem] = useState({ kind: "juice", name: "" });
 
   const loadOrders = async () => {
     try {
@@ -39,7 +40,7 @@ export function KitchenPanel() {
 
   useEffect(() => {
     loadOrders();
-    const socket = new WebSocket(socketUrl(`/ws/kitchen/${SLUGS.cook}`));
+    const socket = new WebSocket(socketUrl(`/ws/kitchen/${SLUGS.cook}`, "cook"));
     socket.onmessage = (event) => {
       try {
         const payload = JSON.parse(event.data);
@@ -66,6 +67,22 @@ export function KitchenPanel() {
     try {
       const next = await api.availability(kind, id, isActive);
       setCatalog(next);
+    } catch (err) {
+      setMessage(err.message);
+    }
+  };
+
+  const createCatalogOption = async (event) => {
+    event.preventDefault();
+    if (!newCatalogItem.name.trim()) {
+      setMessage("Ingrese el nombre de la opción.");
+      return;
+    }
+    try {
+      await api.createCatalogItem(newCatalogItem.kind, newCatalogItem.name.trim());
+      setNewCatalogItem({ ...newCatalogItem, name: "" });
+      await reload();
+      setMessage("Opción agregada correctamente.");
     } catch (err) {
       setMessage(err.message);
     }
@@ -204,6 +221,18 @@ export function KitchenPanel() {
 
         <aside className="availability">
           <h2>Disponibilidad</h2>
+          <form className="catalogCreateForm" onSubmit={createCatalogOption}>
+            <h3>Agregar opción</h3>
+            <select value={newCatalogItem.kind} onChange={(event) => setNewCatalogItem({ ...newCatalogItem, kind: event.target.value })}>
+              <option value="juice">Tipo de jugo</option>
+              <option value="egg">Preparación de huevo</option>
+              <option value="bread">Pan</option>
+              <option value="salad">Ensalada</option>
+              <option value="ingredient">Insumo</option>
+            </select>
+            <input value={newCatalogItem.name} placeholder="Nombre de la opción" onChange={(event) => setNewCatalogItem({ ...newCatalogItem, name: event.target.value })} />
+            <button type="submit" className="primary">Agregar</button>
+          </form>
           <ToggleList title="Desayunos" kind="breakfast" items={catalog.breakfast_types} onToggle={updateAvailability} collapsible />
           <ToggleList title="Huevos" kind="egg" items={catalog.egg_prep_types} onToggle={updateAvailability} collapsible />
           <ToggleList title="Ingredientes" kind="ingredient" items={catalog.ingredients} onToggle={updateAvailability} collapsible />

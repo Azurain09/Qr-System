@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+﻿import React, { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Bed, CalendarClock, ChefHat, ClipboardList, Coffee, DoorOpen, EggFried, IdCard, Info, MapPin, Minus, Plus, Users, Utensils, XCircle } from "lucide-react";
 import { api, socketUrl } from "../api/client";
 import { ASSET_BASE, BREAKFAST_IMAGES, COFFEE_OPTIONS, EGG_DESCRIPTIONS, EGG_IMAGES, EXTRA_PRICES, JUICE_OPTIONS, STATUS_FLOW, displayName } from "../constants/app";
@@ -21,12 +21,29 @@ const onlyValidRoomInput = (value, currentValue) => {
   const digits = onlyDigits(value, 3);
   return VALID_ROOMS.some((room) => room.startsWith(digits)) ? digits : currentValue;
 };
-const onlyLetters = (value) => value.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]/g, "").replace(/\s{2,}/g, " ");
+const onlyLetters = (value) => value.replace(/[^A-Za-zÃÃ‰ÃÃ“ÃšÃœÃ‘Ã¡Ã©Ã­Ã³ÃºÃ¼Ã±\s]/g, "").replace(/\s{2,}/g, " ");
 const normalizeMessage = (value) => value === "Completar todos los campos" ? REQUIRED_MESSAGE : value;
 const formatBreakfastDescription = (value = "") => value
-  .replaceAll("cafe", "café")
-  .replaceAll("jamon", "jamón")
-  .replaceAll("yogurt pequeno", "yogurt pequeño");
+  .replaceAll("cafe", "cafÃ©")
+  .replaceAll("jamon", "jamÃ³n")
+  .replaceAll("yogurt pequeno", "yogurt pequeÃ±o");
+const drinkTotal = (quantities = {}) => Object.values(quantities).reduce((sum, quantity) => sum + Number(quantity || 0), 0);
+const cleanDrinkQuantities = (quantities = {}, options, availableOptions, fallbackName) => {
+  const availableNames = new Set(availableOptions.map((option) => option.name));
+  const optionNames = new Set(options.map((option) => option.name));
+  const next = {};
+  Object.entries(quantities || {}).forEach(([name, quantity]) => {
+    const safeQuantity = Math.max(0, Math.min(2, Number(quantity || 0)));
+    if (safeQuantity > 0 && optionNames.has(name) && availableNames.has(name)) next[name] = safeQuantity;
+  });
+  if (!Object.keys(next).length && availableNames.has(fallbackName)) next[fallbackName] = 1;
+  else if (!Object.keys(next).length && availableOptions[0]) next[availableOptions[0].name] = 1;
+  return next;
+};
+const optionImageFor = (options, name, fallback) => {
+  const direct = options.find((option) => option.name === name || option.ingredientNames?.includes(name));
+  return direct?.image || fallback;
+};
 const RESET_AFTER_DELIVERY_MS = 3 * 60 * 1000;
 const RESTAURANT_DELIVERY_MINUTES = 6;
 const ROOM_DELIVERY_MINUTES = 10;
@@ -40,8 +57,8 @@ const initialDraft = {
   claimed_included: true,
   breakfast_type_id: "",
   egg_prep_type_id: "",
-  juice_choice: "Naranja",
-  coffee_choice: "Café Negro",
+  juice_quantities: { Naranja: 1 },
+  coffee_quantities: { "CafÃ© Negro": 1 },
   extras: [],
 };
 
@@ -83,11 +100,19 @@ export function GuestApp() {
   const allBreakfasts = catalog?.breakfast_types || [];
   const activeEggs = catalog?.egg_prep_types.filter((item) => item.is_active) || [];
   const allExtras = catalog?.extra_categories.flatMap((category) => category.extras) || [];
+  const juiceCategory = catalog?.extra_categories.find((category) => category.name === "Jugos");
+  const juiceOptions = (juiceCategory?.extras || []).map((extra) => ({
+    name: extra.name,
+    ingredientNames: [extra.name],
+    image: optionImageFor(JUICE_OPTIONS, extra.name, `${ASSET_BASE}/juice-surtido.webp`),
+    color: "orange",
+    catalogActive: extra.is_active,
+  }));
   const selectedBreakfast = allBreakfasts.find((item) => item.id === Number(draft.breakfast_type_id));
   const selectedEgg = activeEggs.find((egg) => egg.id === Number(draft.egg_prep_type_id));
   const isIngredientAvailable = (name) => catalog?.ingredients.find((ingredient) => ingredient.name === name)?.is_active !== false;
-  const isDrinkAvailable = (option) => (option.ingredientNames || [option.name]).every(isIngredientAvailable);
-  const availableJuices = JUICE_OPTIONS.filter(isDrinkAvailable);
+  const isDrinkAvailable = (option) => option.catalogActive !== false && (option.ingredientNames || [option.name]).every(isIngredientAvailable);
+  const availableJuices = juiceOptions.filter(isDrinkAvailable);
   const availableCoffees = COFFEE_OPTIONS.filter(isDrinkAvailable);
 
   useEffect(() => {
@@ -132,12 +157,8 @@ export function GuestApp() {
     if (!catalog) return;
     setDraft((current) => ({
       ...current,
-      juice_choice: JUICE_OPTIONS.find((option) => option.name === current.juice_choice && isDrinkAvailable(option))
-        ? current.juice_choice
-        : availableJuices[0]?.name || "",
-      coffee_choice: COFFEE_OPTIONS.find((option) => option.name === current.coffee_choice && isDrinkAvailable(option))
-        ? current.coffee_choice
-        : availableCoffees[0]?.name || "",
+      juice_quantities: cleanDrinkQuantities(current.juice_quantities, juiceOptions, availableJuices, "Naranja"),
+      coffee_quantities: cleanDrinkQuantities(current.coffee_quantities, COFFEE_OPTIONS, availableCoffees, "CafÃ© Negro"),
       breakfast_type_id: allBreakfasts.find((item) => item.id === Number(current.breakfast_type_id) && item.is_active)
         ? current.breakfast_type_id
         : "",
@@ -211,7 +232,7 @@ export function GuestApp() {
   };
 
   const validateIdentity = () => {
-    if (!/^\d{8}$/.test(draft.document) || !/^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$/.test(draft.full_name.trim())) return REQUIRED_MESSAGE;
+    if (!/^\d{8}$/.test(draft.document) || !/^[A-Za-zÃÃ‰ÃÃ“ÃšÃœÃ‘Ã¡Ã©Ã­Ã³ÃºÃ¼Ã±\s]+$/.test(draft.full_name.trim())) return REQUIRED_MESSAGE;
     return "";
   };
 
@@ -233,6 +254,26 @@ export function GuestApp() {
     quantity: item.quantity,
     egg_prep_type_id: item.egg_prep_type_id ? Number(item.egg_prep_type_id) : null,
   }));
+
+  const buildIncludedDrinksPayload = () => [
+    ...Object.entries(draft.juice_quantities || {})
+      .filter(([, quantity]) => Number(quantity) > 0)
+      .map(([name, quantity]) => ({ kind: "juice", name, quantity: Number(quantity) })),
+    ...Object.entries(draft.coffee_quantities || {})
+      .filter(([, quantity]) => Number(quantity) > 0)
+      .map(([name, quantity]) => ({ kind: "coffee", name, quantity: Number(quantity) })),
+  ];
+
+  const updateDrinkQuantity = (current, field, name, delta, maxTotal) => {
+    const quantities = { ...(current[field] || {}) };
+    const currentQuantity = Number(quantities[name] || 0);
+    const currentTotal = drinkTotal(quantities);
+    if (delta > 0 && currentTotal >= maxTotal) return current;
+    const nextQuantity = Math.max(0, Math.min(2, currentQuantity + delta));
+    if (nextQuantity <= 0) delete quantities[name];
+    else quantities[name] = nextQuantity;
+    return { ...current, [field]: quantities };
+  };
 
   const submitDraft = async () => {
     if (!draft.breakfast_type_id || !selectedBreakfast?.is_active || (selectedBreakfast?.has_eggs && !draft.egg_prep_type_id)) {
@@ -256,6 +297,7 @@ export function GuestApp() {
         room_number: draft.delivery_location === "Habitacion" ? draft.room_number : null,
         breakfast_type_id: Number(draft.breakfast_type_id),
         egg_prep_type_id: draft.egg_prep_type_id ? Number(draft.egg_prep_type_id) : null,
+        included_drinks: buildIncludedDrinksPayload(),
         extras: buildExtrasPayload(),
       };
       const created = await api.createOrder(payload);
@@ -341,8 +383,13 @@ export function GuestApp() {
   };
 
   const validateDrinks = () => {
-    if (!draft.juice_choice || !draft.coffee_choice) return "Debe seleccionar un jugo y un café";
-    if (!availableJuices.some((option) => option.name === draft.juice_choice) || !availableCoffees.some((option) => option.name === draft.coffee_choice)) {
+    const selectedJuices = Object.entries(draft.juice_quantities || {}).filter(([, quantity]) => Number(quantity) > 0);
+    const selectedCoffees = Object.entries(draft.coffee_quantities || {}).filter(([, quantity]) => Number(quantity) > 0);
+    if (!selectedJuices.length || !selectedCoffees.length) return "Debe seleccionar al menos 1 jugo y 1 cafÃ©";
+    if (drinkTotal(draft.juice_quantities) > 2 || drinkTotal(draft.coffee_quantities) > 2) return "Solo puede seleccionar hasta 2 jugos y 2 cafÃ©s";
+    const availableJuiceNames = new Set(availableJuices.map((option) => option.name));
+    const availableCoffeeNames = new Set(availableCoffees.map((option) => option.name));
+    if (selectedJuices.some(([name]) => !availableJuiceNames.has(name)) || selectedCoffees.some(([name]) => !availableCoffeeNames.has(name))) {
       return "Seleccione bebidas disponibles";
     }
     return "";
@@ -350,29 +397,26 @@ export function GuestApp() {
 
   const contextStrip = (
     <div className="guestContext referenceContext">
-      <span><Users size={25} /><b>Huésped:</b><strong>{draft.full_name || order?.guest_name}</strong></span>
-      <span><DoorOpen size={26} /><b>{draft.delivery_location === "Habitacion" ? "Habitación:" : "Mesa:"}</b><strong>{draft.delivery_location === "Habitacion" ? (draft.room_number || order?.room_number || "-") : (draft.table_number || order?.table_number || "-")}</strong></span>
+      <span><Users size={25} /><b>HuÃ©sped:</b><strong>{draft.full_name || order?.guest_name}</strong></span>
+      <span><DoorOpen size={26} /><b>{draft.delivery_location === "Habitacion" ? "HabitaciÃ³n:" : "Mesa:"}</b><strong>{draft.delivery_location === "Habitacion" ? (draft.room_number || order?.room_number || "-") : (draft.table_number || order?.table_number || "-")}</strong></span>
       <span><Users size={25} /><b>Personas registradas:</b><strong>2</strong></span>
       {selectedBreakfast && <span><EggFried size={25} /><b>Desayuno seleccionado:</b><strong>{displayName(selectedBreakfast.name)}</strong></span>}
-      {selectedEgg && <span><Coffee size={25} /><b>Preparación de huevos:</b><strong>{selectedEgg.name}</strong></span>}
+      {selectedEgg && <span><Coffee size={25} /><b>PreparaciÃ³n de huevos:</b><strong>{selectedEgg.name}</strong></span>}
     </div>
   );
 
-  const includedDrinks = {
-    juice: draft.juice_choice,
-    coffee: draft.coffee_choice,
-  };
+  const includedDrinks = Array.isArray(order?.included_drinks) && order.included_drinks.length ? order.included_drinks : buildIncludedDrinksPayload();
 
   const displayOrder = order ? { ...order, included_drinks: includedDrinks } : { ...orderSummary, included_drinks: includedDrinks };
   const deliveryMinutes = draft.delivery_location === "Habitacion" ? ROOM_DELIVERY_MINUTES : RESTAURANT_DELIVERY_MINUTES;
 
   const extrasScreen = (
-    <GuestChrome title="SELECCIÓN DE ADICIONALES" icon={<Coffee size={21} />}>
+    <GuestChrome title="SELECCIÃ“N DE ADICIONALES" icon={<Coffee size={21} />}>
       <section className="breakfastScreen">
         {sharedMessages}
         {contextStrip}
         <div className="portalHeading">
-          <h1>{addingExtras ? "Agrega más adicionales" : "Seleccione adicionales"}</h1>
+          <h1>{addingExtras ? "Agrega mÃ¡s adicionales" : "Seleccione adicionales"}</h1>
         </div>
         <section className="extrasPanel standaloneExtras">
           {catalog.extra_categories.map((category) => {
@@ -424,7 +468,7 @@ export function GuestApp() {
 
   if (step === "document") {
     return (
-      <GuestChrome title="INICIO DE SESIÓN" icon={<Users size={21} />} footer={false} className="loginPortal">
+      <GuestChrome title="INICIO DE SESIÃ“N" icon={<Users size={21} />} footer={false} className="loginPortal">
         <section className="documentScreen loginReferenceScreen">
           {sharedMessages}
           <div className="loginSplitCard">
@@ -438,10 +482,10 @@ export function GuestApp() {
               <button className="portalPrimary loginButton" onClick={continueFromDocument}>
                 <ArrowRight size={20} /> Validar
               </button>
-              <PortalInfo>Asegúrese de ingresar correctamente su número de documento. No utilice puntos ni espacios.</PortalInfo>
-              <div className="loginCopyright">© 2025 Cacique Hotel - Todos los derechos reservados</div>
+              <PortalInfo>AsegÃºrese de ingresar correctamente su nÃºmero de documento. No utilice puntos ni espacios.</PortalInfo>
+              <div className="loginCopyright">Â© 2025 Cacique Hotel - Todos los derechos reservados</div>
             </div>
-            <img className="loginHotelImage" src={`${ASSET_BASE}/Hotel.png`} alt="Hotel Cacique" />
+            <img className="loginHotelImage" src={`${ASSET_BASE}/Hotel.webp`} alt="Hotel Cacique" decoding="async" />
           </div>
         </section>
       </GuestChrome>
@@ -450,11 +494,11 @@ export function GuestApp() {
 
   if (step === "identity") {
     return (
-      <GuestChrome title="SELECCIÓN DE UBICACIÓN" icon={<MapPin size={22} />}>
+      <GuestChrome title="SELECCIÃ“N DE UBICACIÃ“N" icon={<MapPin size={22} />}>
         <section className="locationScreen">
           {sharedMessages}
           <div className="portalHeading">
-            <h1>Seleccione su ubicación actual</h1>
+            <h1>Seleccione su ubicaciÃ³n actual</h1>
             <p>Complete sus datos para realizar su pedido de desayuno.</p>
           </div>
           <div className="guestDetailsCard">
@@ -474,8 +518,8 @@ export function GuestApp() {
             </button>
             <button className={`locationCard room ${draft.delivery_location === "Habitacion" ? "selected" : ""}`} onClick={() => setDraft({ ...draft, delivery_location: "Habitacion" })}>
               <span><Bed size={72} /></span>
-              <strong>Habitación</strong>
-              <p>Realizar pedido desde su habitación</p>
+              <strong>HabitaciÃ³n</strong>
+              <p>Realizar pedido desde su habitaciÃ³n</p>
             </button>
           </div>
           <div className="portalNav">
@@ -498,28 +542,28 @@ export function GuestApp() {
 
   if (step === "locationDetail") {
     return (
-      <GuestChrome title={draft.delivery_location === "Restaurante" ? "SELECCIÓN DE MESA" : "SELECCIÓN DE HABITACIÓN"} icon={draft.delivery_location === "Restaurante" ? <Utensils size={21} /> : <Bed size={21} />}>
+      <GuestChrome title={draft.delivery_location === "Restaurante" ? "SELECCIÃ“N DE MESA" : "SELECCIÃ“N DE HABITACIÃ“N"} icon={draft.delivery_location === "Restaurante" ? <Utensils size={21} /> : <Bed size={21} />}>
         <section className="locationScreen">
           {sharedMessages}
           <div className="locationDetailPanel">
             <div className="locationDetailCopy">
-              <h2>{draft.delivery_location === "Restaurante" ? "Ingrese número de mesa" : "Ingrese número de habitación"}</h2>
+              <h2>{draft.delivery_location === "Restaurante" ? "Ingrese nÃºmero de mesa" : "Ingrese nÃºmero de habitaciÃ³n"}</h2>
               {draft.delivery_location === "Restaurante" ? (
-                <Field label="Número de mesa">
+                <Field label="NÃºmero de mesa">
                   <select value={draft.table_number} onChange={(event) => setDraft({ ...draft, table_number: event.target.value })}>
                     <option value="">Seleccionar</option>
                     {[1, 2, 3, 4, 5, 6, 7].map((number) => <option key={number}>{number}</option>)}
                   </select>
                 </Field>
               ) : (
-                <Field label="Habitación">
+                <Field label="HabitaciÃ³n">
                   <input value={draft.room_number} inputMode="numeric" maxLength="3" placeholder="Ejemplo: 203" onChange={(event) => setDraft({ ...draft, room_number: onlyValidRoomInput(event.target.value, draft.room_number) })} />
                 </Field>
               )}
-              <p className="hintText">{draft.delivery_location === "Restaurante" ? "Solo se permiten números del 1 al 7" : "Ingrese una habitación disponible"}</p>
-              <PortalInfo>{draft.delivery_location === "Restaurante" ? "Asegúrese de ingresar el número correcto de su mesa." : "Asegúrese de ingresar correctamente el número de su habitación."}</PortalInfo>
+              <p className="hintText">{draft.delivery_location === "Restaurante" ? "Solo se permiten nÃºmeros del 1 al 7" : "Ingrese una habitaciÃ³n disponible"}</p>
+              <PortalInfo>{draft.delivery_location === "Restaurante" ? "AsegÃºrese de ingresar el nÃºmero correcto de su mesa." : "AsegÃºrese de ingresar correctamente el nÃºmero de su habitaciÃ³n."}</PortalInfo>
             </div>
-            <img className="locationPhoto" src={`${ASSET_BASE}/${draft.delivery_location === "Restaurante" ? "tables.png" : "room.png"}`} alt={draft.delivery_location} />
+            <img className="locationPhoto" src={`${ASSET_BASE}/${draft.delivery_location === "Restaurante" ? "tables.webp" : "room.webp"}`} alt={draft.delivery_location} loading="lazy" decoding="async" />
           </div>
           <div className="portalNav">
             <BackButton onClick={() => setStep("identity")} />
@@ -541,7 +585,7 @@ export function GuestApp() {
 
   if (step === "breakfast") {
     return (
-      <GuestChrome title="SELECCIÓN DE DESAYUNO" icon={<ChefHat size={21} />}>
+      <GuestChrome title="SELECCIÃ“N DE DESAYUNO" icon={<ChefHat size={21} />}>
         <section className="breakfastScreen">
           {sharedMessages}
           {contextStrip}
@@ -557,7 +601,7 @@ export function GuestApp() {
                 disabled={!breakfast.is_active}
                 onClick={() => setDraft({ ...draft, breakfast_type_id: breakfast.id, egg_prep_type_id: breakfast.has_eggs ? draft.egg_prep_type_id : "" })}
               >
-                <img src={BREAKFAST_IMAGES[breakfast.name] || `${ASSET_BASE}/Americano.png`} alt={breakfast.name} />
+                <img src={BREAKFAST_IMAGES[breakfast.name] || `${ASSET_BASE}/Americano.webp`} alt={breakfast.name} loading="lazy" decoding="async" />
                 <div>
                   <strong>{displayName(breakfast.name)}</strong>
                   <p>{formatBreakfastDescription(breakfast.description)}</p>
@@ -580,23 +624,23 @@ export function GuestApp() {
 
   if (step === "egg") {
     return (
-      <GuestChrome title="SELECCIÓN DE PREPARACIÓN DE HUEVOS" icon={<EggFried size={21} />}>
+      <GuestChrome title="SELECCIÃ“N DE PREPARACIÃ“N DE HUEVOS" icon={<EggFried size={21} />}>
         <section className="breakfastScreen">
           {sharedMessages}
           {contextStrip}
           <div className="portalHeading">
-            <h1>Seleccione la preparación de sus huevos</h1>
-            <p>Este desayuno incluye huevos, por favor elija cómo desea que los preparemos.</p>
+            <h1>Seleccione la preparaciÃ³n de sus huevos</h1>
+            <p>Este desayuno incluye huevos, por favor elija cÃ³mo desea que los preparemos.</p>
           </div>
-          <div className="inlineNotice"><Info size={22} /><b>Importante:</b><span>Debe seleccionar una opción de preparación.</span></div>
+          <div className="inlineNotice"><Info size={22} /><b>Importante:</b><span>Debe seleccionar una opciÃ³n de preparaciÃ³n.</span></div>
           <div className="eggChoiceGrid">
             {activeEggs.map((egg) => (
               <button key={egg.id} className={`eggChoice ${Number(draft.egg_prep_type_id) === egg.id ? "selected" : ""}`} onClick={() => setDraft({ ...draft, egg_prep_type_id: egg.id })}>
-                <img src={EGG_IMAGES[egg.name] || `${ASSET_BASE}/egg-fritos.png`} alt={egg.name} />
+                <img src={EGG_IMAGES[egg.name] || `${ASSET_BASE}/egg-fritos.webp`} alt={egg.name} loading="lazy" decoding="async" />
                 <div>
                   <span><EggFried size={24} /></span>
                   <strong>{egg.name}</strong>
-                  <p>{EGG_DESCRIPTIONS[egg.name] || "Preparación de huevos."}</p>
+                  <p>{EGG_DESCRIPTIONS[egg.name] || "PreparaciÃ³n de huevos."}</p>
                 </div>
                 <i />
               </button>
@@ -621,35 +665,37 @@ export function GuestApp() {
 
   if (step === "drinks") {
     return (
-      <GuestChrome title="SELECCIÓN DE BEBIDAS" icon={<Coffee size={21} />}>
+      <GuestChrome title="SELECCIÃ“N DE BEBIDAS" icon={<Coffee size={21} />}>
         <section className="breakfastScreen">
           {sharedMessages}
           {contextStrip}
           <div className="portalHeading">
             <h1>Seleccione su bebida</h1>
-            <p>Todos nuestros desayunos incluyen 1 jugo y 1 café.</p>
+            <p>Todos nuestros desayunos incluyen 1 jugo y 1 cafÃ©.</p>
           </div>
           <div className="drinkSelectionGrid">
             <DrinkGroup
               title="Jugo"
-              subtitle="Seleccione su jugo favorito"
-              options={JUICE_OPTIONS}
-              value={draft.juice_choice}
-              onChange={(name) => setDraft({ ...draft, juice_choice: name })}
+              subtitle="Seleccione hasta 2 jugos"
+              options={juiceOptions}
+              quantities={draft.juice_quantities}
+              maxTotal={2}
+              onChange={(name, delta) => setDraft((current) => updateDrinkQuantity(current, "juice_quantities", name, delta, 2))}
               isOptionDisabled={(option) => !isDrinkAvailable(option)}
               tone="orange"
             />
             <DrinkGroup
-              title="Café"
-              subtitle="Seleccione su café favorito"
+              title="CafÃ©"
+              subtitle="Seleccione hasta 2 cafÃ©s"
               options={COFFEE_OPTIONS}
-              value={draft.coffee_choice}
-              onChange={(name) => setDraft({ ...draft, coffee_choice: name })}
+              quantities={draft.coffee_quantities}
+              maxTotal={2}
+              onChange={(name, delta) => setDraft((current) => updateDrinkQuantity(current, "coffee_quantities", name, delta, 2))}
               isOptionDisabled={(option) => !isDrinkAvailable(option)}
               tone="purple"
             />
           </div>
-          <div className="inlineNotice drinksNotice"><Info size={22} /><b>Importante:</b><span>Las bebidas seleccionadas están incluidas en su desayuno. No tienen costo adicional.</span></div>
+          <div className="inlineNotice drinksNotice"><Info size={22} /><b>Importante:</b><span>Las bebidas seleccionadas estÃ¡n incluidas en su desayuno. No tienen costo adicional.</span></div>
           <div className="portalNav">
             <BackButton onClick={() => setStep(selectedBreakfast?.has_eggs ? "egg" : "breakfast")} />
             <button className="portalPrimary navPrimary" onClick={() => {
@@ -678,7 +724,7 @@ export function GuestApp() {
           {contextStrip}
           <div className="portalHeading">
             <h1>Revise los detalles de su pedido</h1>
-            <p>Por favor verifique que toda la información sea correcta antes de confirmar.</p>
+            <p>Por favor verifique que toda la informaciÃ³n sea correcta antes de confirmar.</p>
           </div>
           <div className="confirmationLayout">
             <div className="documentCard compactCard orderSummaryCard">
@@ -686,7 +732,7 @@ export function GuestApp() {
               <OrderSummary order={displayOrder} />
             </div>
             <div className="confirmationMedia">
-              <img src={BREAKFAST_IMAGES[selectedBreakfast?.name] || `${ASSET_BASE}/Americano.png`} alt={selectedBreakfast?.name || "Desayuno"} />
+              <img src={BREAKFAST_IMAGES[selectedBreakfast?.name] || `${ASSET_BASE}/Americano.webp`} alt={selectedBreakfast?.name || "Desayuno"} loading="lazy" decoding="async" />
               <div className="deliveryTime"><CalendarClock size={34} /><p><b>Tiempo estimado de entrega:</b><span>{deliveryMinutes} minutos</span></p></div>
             </div>
           </div>
@@ -717,7 +763,7 @@ export function GuestApp() {
                 <div className="statusTrack portalStatus">
                   {STATUS_FLOW.map((status) => <span key={status} className={STATUS_FLOW.indexOf(order.status) >= STATUS_FLOW.indexOf(status) ? "done" : ""}>{status}</span>)}
                 </div>
-                {order.status === "Entregado" && <p className="deliveredThanks">Su desayuno ha sido entregado. ¡Buen provecho!</p>}
+                {order.status === "Entregado" && <p className="deliveredThanks">Su desayuno ha sido entregado. Â¡Buen provecho!</p>}
               </>
             )}
             <OrderSummary order={displayOrder} />
@@ -727,7 +773,7 @@ export function GuestApp() {
                 setAddingExtras(true);
                 setStep("extras");
               }}>
-                ¿Desea agregar algo más a su pedido?
+                Â¿Desea agregar algo mÃ¡s a su pedido?
               </button>
             )}
           </div>
@@ -737,11 +783,11 @@ export function GuestApp() {
   }
 
   return (
-    <GuestChrome title="INICIO DE SESIÓN" icon={<Users size={21} />} footer={false} className="loginPortal">
+    <GuestChrome title="INICIO DE SESIÃ“N" icon={<Users size={21} />} footer={false} className="loginPortal">
       <section className="documentScreen loginReferenceScreen">
         {sharedMessages}
         <div className="portalHeading">
-          <h1>Estamos preparando tu sesión</h1>
+          <h1>Estamos preparando tu sesiÃ³n</h1>
           <p>Si la pantalla no avanza, vuelve a ingresar tu DNI.</p>
         </div>
         <div className="portalNav">
@@ -756,7 +802,8 @@ export function GuestApp() {
   );
 }
 
-function DrinkGroup({ title, subtitle, options, value, onChange, isOptionDisabled, tone }) {
+function DrinkGroup({ title, subtitle, options, quantities = {}, maxTotal = 2, onChange, isOptionDisabled, tone }) {
+  const total = drinkTotal(quantities);
   return (
     <section className={`drinkGroup ${tone}`}>
       <div className="drinkGroupTitle">
@@ -766,16 +813,25 @@ function DrinkGroup({ title, subtitle, options, value, onChange, isOptionDisable
           <p>{subtitle}</p>
         </div>
       </div>
-      <div className="drinkCards">
+      <div className="drinkLimitCounter">{total}/{maxTotal} seleccionado</div>
+      <div className="drinkCards drinkCarousel">
         {options.map((option) => {
-          const disabled = isOptionDisabled?.(option) || false;
+          const quantity = Number(quantities[option.name] || 0);
+          const soldOut = isOptionDisabled?.(option) || false;
+          const limitReached = total >= maxTotal && quantity === 0;
+          const disabled = soldOut || limitReached;
           return (
-            <button key={option.name} className={`drinkCard ${value === option.name ? "selected" : ""} ${disabled ? "disabled" : ""}`} disabled={disabled} onClick={() => onChange(option.name)}>
-              <img src={option.image} alt={option.name} />
-              <strong>{option.name}</strong>
-              {disabled && <small>No disponible</small>}
-              <i />
-            </button>
+            <article key={option.name} className={`drinkCard ${quantity > 0 ? "selected" : ""} ${disabled ? "disabled" : ""}`}>
+              <img src={option.image} alt={option.name} loading="lazy" decoding="async" />
+              <strong>{displayName(option.name)}</strong>
+              {soldOut && <small>Agotado</small>}
+              {!soldOut && limitReached && <small>No disponible</small>}
+              <div className="drinkStepper">
+                <button type="button" disabled={quantity <= 0} onClick={() => onChange(option.name, -1)}><Minus size={15} /></button>
+                <b>{quantity}</b>
+                <button type="button" disabled={disabled} onClick={() => onChange(option.name, 1)}><Plus size={15} /></button>
+              </div>
+            </article>
           );
         })}
       </div>

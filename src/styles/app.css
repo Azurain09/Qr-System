@@ -226,6 +226,18 @@ a {
   width: 100%;
 }
 
+.loginUserIcon {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 900;
+  background: #1e0b43;
+  color: #fff;
+}
+
 .documentCard {
   width: min(760px, 100%);
   border: 1px solid #e3e2e9;
@@ -897,6 +909,14 @@ a {
   gap: 16px;
 }
 
+.drinkCarousel {
+  display: flex;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  padding: 2px 2px 10px;
+}
+
 .drinkCard {
   min-height: 210px;
   border: 1px solid #e1e2e8;
@@ -908,6 +928,12 @@ a {
   background: white;
   color: #2d3046;
   cursor: pointer;
+  scroll-snap-align: start;
+}
+
+.drinkCarousel .drinkCard {
+  min-width: 150px;
+  flex: 0 0 150px;
 }
 
 .drinkCard.selected {
@@ -948,6 +974,42 @@ a {
 
 .drinkCard strong {
   text-align: center;
+}
+
+.drinkLimitCounter {
+  margin: -6px 0 12px;
+  text-align: center;
+  font-weight: 900;
+  color: #1e0b43;
+}
+
+.drinkStepper {
+  display: grid;
+  grid-template-columns: 32px 30px 32px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.drinkStepper button {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #e1e2e8;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  color: #1e0b43;
+}
+
+.drinkStepper button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.drinkStepper b {
+  text-align: center;
+  color: #1e0b43;
 }
 
 .drinkCard.selected strong {
@@ -1898,6 +1960,35 @@ select {
   font-size: 15px;
 }
 
+.catalogCreateForm {
+  margin: 12px 0 16px;
+  padding: 12px;
+  border: 1px solid #edf1ee;
+  border-radius: 8px;
+  display: grid;
+  gap: 9px;
+  background: #fff;
+}
+
+.catalogCreateForm h3 {
+  margin: 0;
+  color: #170b37;
+  font-size: 15px;
+}
+
+.catalogCreateForm select,
+.catalogCreateForm input {
+  min-height: 38px;
+  border: 1px solid #dfe4e8;
+  border-radius: 7px;
+  padding: 8px 10px;
+  font: inherit;
+}
+
+.catalogCreateForm button {
+  min-height: 38px;
+}
+
 .toggleDropdown {
   border: 1px solid #edf1ee;
   border-radius: 8px;
@@ -2417,6 +2508,147 @@ select {
   font-style: normal;
 }
 
+.userManagement {
+  width: min(1320px, calc(100% - 64px));
+  margin: 26px auto 18px;
+}
+
+.userManagementHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 16px;
+}
+
+.userManagementHeading h2,
+.userFormTitle h3 {
+  margin: 0;
+  color: #171137;
+}
+
+.userManagementHeading h2 { font-size: 27px; }
+.userManagementHeading p,
+.userFormTitle p { margin: 5px 0 0; color: #69657a; }
+
+.userStats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.userStat {
+  min-height: 104px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid #e7e5ed;
+  border-radius: 8px;
+  padding: 16px;
+  background: #fff;
+}
+
+.userStat > span {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+}
+
+.userStat svg { width: 25px; height: 25px; }
+.userStat.purple > span { color: #6420d4; background: #f0e9ff; }
+.userStat.green > span { color: #169447; background: #e5f7eb; }
+.userStat.orange > span { color: #f28c00; background: #fff1df; }
+.userStat.blue > span { color: #1479f6; background: #e5f0ff; }
+.userStat small { display: block; color: #514b66; font-weight: 800; }
+.userStat strong { display: block; margin-top: 5px; color: #171137; font-size: 25px; }
+
+.userManagementForm,
+.userDirectory {
+  border: 1px solid #e5e3eb;
+  border-radius: 8px;
+  padding: 18px;
+  background: #fff;
+}
+
+.userManagementForm {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.5fr) minmax(150px, .7fr) minmax(160px, .8fr) auto;
+  gap: 14px;
+  align-items: end;
+  margin-bottom: 16px;
+}
+
+.userFormTitle { grid-column: 1 / -1; }
+.userManagementForm label { display: grid; gap: 6px; color: #37314f; font-size: 13px; font-weight: 900; }
+.userManagementForm input,
+.userManagementForm select { width: 100%; }
+
+.userActiveField {
+  min-height: 42px;
+  display: flex !important;
+  align-items: center;
+  gap: 8px !important;
+  padding-bottom: 4px;
+  white-space: nowrap;
+}
+
+.userActiveField input { width: 18px; min-height: auto; height: 18px; }
+.userFormActions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 10px; }
+.userFormActions button { width: auto; }
+
+.userFilters {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) 210px 210px;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.userSearch {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #ddd9e6;
+  border-radius: 6px;
+  padding: 0 12px;
+  color: #6b657b;
+}
+
+.userSearch input { min-height: 38px; border: 0; padding: 0; outline: 0; }
+.userTableWrap { overflow-x: auto; }
+.userTable { width: 100%; border-collapse: collapse; }
+.userTable th,
+.userTable td { padding: 13px 12px; border-bottom: 1px solid #efedf3; text-align: left; }
+.userTable th { color: #45405b; background: #faf9fc; font-size: 12px; }
+.userTable td { color: #332d4a; font-size: 13px; }
+.userTable td:first-child { display: flex; align-items: center; gap: 10px; min-width: 220px; }
+
+.userAvatar {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  color: #5b1fd1;
+  background: #eee6ff;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.userStatus { display: inline-flex; align-items: center; border-radius: 999px; padding: 5px 9px; font-size: 11px; font-weight: 900; }
+.userStatus.active { color: #137a37; background: #e7f7ec; }
+.userStatus.inactive { color: #c53030; background: #ffe8e8; }
+.userActions { display: flex; gap: 7px; }
+.userActions button { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid #e2dfe9; border-radius: 6px; color: #342b59; background: #fff; }
+.userActions button:hover { border-color: #5b1fd1; color: #5b1fd1; }
+.userActions .deactivate { color: #d53535; }
+.userActions .activate { color: #16833e; }
+.emptyUsers { padding: 28px !important; text-align: center !important; color: #716b80 !important; }
+
 .linkStack {
   justify-content: center;
   flex-wrap: wrap;
@@ -2488,6 +2720,375 @@ select {
 
   .staffForm {
     grid-template-columns: 1fr;
+  }
+
+  .userStats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .userManagementForm,
+  .userFilters { grid-template-columns: 1fr; }
+}
+
+@media (min-width: 760px) and (max-height: 700px) {
+  .portalTopbar,
+  .staffTopbar {
+    min-height: 58px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .portalLogo {
+    width: min(205px, 24vw);
+    max-height: 46px;
+  }
+
+  .portalIcon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .portalTitle {
+    font-size: 17px;
+  }
+
+  .portalCanvas {
+    padding-top: 18px;
+    padding-bottom: 8px;
+  }
+
+  .portalFooter {
+    min-height: 36px;
+    font-size: 14px;
+  }
+
+  .portalHeading {
+    margin-bottom: 12px;
+  }
+
+  .portalHeading h1 {
+    font-size: 27px;
+  }
+
+  .portalHeading p {
+    font-size: 13px;
+  }
+
+  .referenceContext {
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    gap: 0;
+  }
+
+  .referenceContext span {
+    min-height: 44px;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .referenceContext span svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .breakfastCards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .breakfastCard img {
+    aspect-ratio: 2.1 / 1;
+  }
+
+  .breakfastCard div {
+    min-height: 108px;
+    padding: 12px 14px 28px;
+  }
+
+  .breakfastCard strong {
+    font-size: 18px;
+  }
+
+  .breakfastCard p {
+    margin-top: 6px;
+    font-size: 11px;
+    line-height: 1.32;
+  }
+
+  .breakfastCard i {
+    bottom: 9px;
+  }
+
+  .drinkSelectionGrid {
+    width: min(1060px, 100%);
+    grid-template-columns: 1.15fr 0.85fr;
+    margin-bottom: 12px;
+    gap: 12px;
+  }
+
+  .drinkGroup {
+    padding: 12px;
+  }
+
+  .drinkGroupTitle {
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .drinkGroupTitle > span {
+    width: 48px;
+    height: 48px;
+  }
+
+  .drinkGroupTitle h2 {
+    font-size: 21px;
+  }
+
+  .drinkGroupTitle small {
+    font-size: 15px;
+  }
+
+  .drinkGroupTitle p {
+    font-size: 12px;
+  }
+
+  .drinkCards {
+    gap: 10px;
+  }
+
+  .drinkCard {
+    min-height: 160px;
+    padding: 10px 8px;
+    gap: 6px;
+  }
+
+  .drinkCard img {
+    max-width: 92px;
+  }
+
+  .drinkCard strong {
+    font-size: 12px;
+  }
+
+  .drinkCard i {
+    width: 18px;
+    height: 18px;
+    margin-top: 0;
+  }
+
+  .inlineNotice {
+    min-height: 42px;
+    margin-bottom: 10px;
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  .portalBack {
+    min-height: 38px;
+    padding: 0 16px;
+  }
+
+  .portalPrimary {
+    min-height: 46px;
+    font-size: 16px;
+  }
+
+  .staffIntro {
+    margin-top: 12px;
+    margin-bottom: 8px;
+  }
+
+  .staffIntro h1 {
+    font-size: 26px;
+  }
+
+  .staffIntro p {
+    margin-top: 2px;
+    font-size: 13px;
+  }
+
+  .reportToolbar {
+    margin-bottom: 8px;
+  }
+
+  .field {
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+
+  input,
+  select {
+    min-height: 38px;
+    padding: 8px 10px;
+  }
+
+  .kitchenOrdersLayout {
+    margin-top: 8px;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 14px;
+    padding-bottom: 12px;
+  }
+
+  .kitchenOrdersLayout h2 {
+    margin-bottom: 8px;
+    font-size: 22px;
+  }
+
+  .orderList {
+    gap: 10px;
+  }
+
+  .orderCard {
+    padding: 12px;
+  }
+
+  .orderTop {
+    margin-bottom: 8px;
+  }
+
+  .orderTop h3 {
+    font-size: 18px;
+  }
+
+  .orderTop p,
+  .muted {
+    font-size: 12px;
+  }
+
+  .summary p {
+    margin-bottom: 5px;
+  }
+
+  .summaryBlock {
+    gap: 4px;
+  }
+
+  .statusButtons {
+    margin: 8px 0 0;
+  }
+
+  .statusButtons button {
+    min-height: 36px;
+    font-size: 12px;
+  }
+
+  .availability {
+    top: 10px;
+    padding: 12px;
+    max-height: calc(100vh - 92px);
+  }
+
+  .availability h2 {
+    margin-bottom: 8px;
+    font-size: 22px;
+  }
+
+  .toggleGroup {
+    margin-top: 8px;
+  }
+
+  .toggleDropdown summary {
+    min-height: 38px;
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  .toggleDropdown summary small {
+    font-size: 11px;
+  }
+
+  .availabilitySectionTitle {
+    margin: 12px 0 6px;
+  }
+
+  .cancelContext,
+  .cancelLayout,
+  .cancelBottomNav {
+    width: min(1220px, calc(100% - 64px));
+  }
+
+  .cancelContext {
+    margin-top: 10px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    padding: 10px 14px;
+    gap: 8px;
+  }
+
+  .cancelContextItem {
+    min-height: 44px;
+  }
+
+  .cancelContextItem b {
+    font-size: 12px;
+  }
+
+  .cancelContextItem span {
+    font-size: 14px;
+  }
+
+  .cancelLayout {
+    margin-top: 12px;
+    grid-template-columns: 310px minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .cancelSummaryCard {
+    min-height: 0;
+    padding: 16px;
+  }
+
+  .cancelSummaryCard h2,
+  .cancelReasonPanel h2 {
+    margin-bottom: 12px;
+    font-size: 20px;
+  }
+
+  .cancelOrderMeta {
+    padding-bottom: 12px;
+    gap: 10px;
+  }
+
+  .cancelOrderMeta > span {
+    width: 34px;
+    height: 34px;
+  }
+
+  .cancelOrderMeta p {
+    font-size: 12px;
+  }
+
+  .cancelSummaryCard .summary {
+    margin-top: 12px;
+    font-size: 12px;
+  }
+
+  .cancelReasonPanel {
+    padding: 14px;
+  }
+
+  .cancelReasonPanel > p {
+    margin-bottom: 10px;
+    font-size: 12px;
+  }
+
+  .cancelReasons button {
+    padding: 11px 14px;
+  }
+
+  .cancelReasons small {
+    font-size: 12px;
+  }
+
+  .cancelWarning {
+    margin-top: 10px;
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  .cancelActions {
+    margin-top: 12px;
+  }
+
+  .cancelBottomNav {
+    margin-top: 12px;
   }
 }
 
@@ -2800,6 +3401,13 @@ select {
   .purgePanel {
     width: calc(100% - 28px);
   }
+
+  .userManagement { width: calc(100% - 28px); }
+  .userStats { grid-template-columns: 1fr; }
+  .userManagementForm,
+  .userDirectory { padding: 14px; }
+  .userFormActions { display: grid; }
+  .userFormActions button { width: 100%; }
 
   .panel {
     padding: 16px;

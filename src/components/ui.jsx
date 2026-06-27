@@ -39,7 +39,7 @@ export function GuestChrome({ title, icon, children, footer = true, countdown, c
           <span className="portalIcon">{icon}</span>
           <strong>{title}</strong>
         </div>
-        <img className="portalLogo" src={`${ASSET_BASE}/logo.png`} alt="QR System" />
+        <img className="portalLogo" src={`${ASSET_BASE}/logo.webp`} alt="QR System" decoding="async" />
       </header>
       {countdown && <div className="floatingCountdown">{countdown}</div>}
       <div className="portalCanvas">{children}</div>
@@ -86,7 +86,7 @@ export function DashboardShell({ title, subtitle, icon, children, className = ""
           <span className="portalIcon">{icon}</span>
           <strong>{title}</strong>
         </div>
-        <img className="portalLogo" src={`${ASSET_BASE}/logo.png`} alt="QR System" />
+        <img className="portalLogo" src={`${ASSET_BASE}/logo.webp`} alt="QR System" decoding="async" />
       </header>
       <section className="staffIntro">
         <h1>{title}</h1>

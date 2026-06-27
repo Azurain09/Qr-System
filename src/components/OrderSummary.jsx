@@ -1,10 +1,13 @@
 import React from "react";
-import { EXTRA_PRICES, INCLUDED_ITEMS, displayName } from "../constants/app";
+import { EXTRA_PRICES, displayName } from "../constants/app";
 
 export function OrderSummary({ order }) {
   const activeExtras = order.extras?.filter((extra) => !extra.is_cancelled) || [];
   const extraTotal = activeExtras.reduce((total, extra) => total + (EXTRA_PRICES[extra.name] || 0) * extra.quantity, 0);
-  const includedDrinks = order.included_drinks || {};
+  const includedDrinks = Array.isArray(order.included_drinks) ? order.included_drinks : [
+    order.included_drinks?.juice ? { kind: "juice", name: order.included_drinks.juice, quantity: 1 } : { kind: "juice", name: "Jugo", quantity: 1 },
+    order.included_drinks?.coffee ? { kind: "coffee", name: order.included_drinks.coffee, quantity: 1 } : { kind: "coffee", name: "Cafe", quantity: 1 },
+  ];
 
   return (
     <div className="summary">
@@ -16,10 +19,9 @@ export function OrderSummary({ order }) {
       <div className="summaryBlock">
         <b>Incluido sin costo adicional</b>
         <ul>
-          {INCLUDED_ITEMS.map((item) => {
-            const selected = item.name === "Jugo" ? includedDrinks.juice : includedDrinks.coffee;
-            return <li key={item.name}>{item.quantity} x {displayName(selected || item.name)}</li>;
-          })}
+          {includedDrinks.map((drink, index) => (
+            <li key={`${drink.kind}-${drink.name}-${index}`}>{drink.quantity} x {drink.kind === "juice" ? "Jugo de " : ""}{displayName(drink.name)}</li>
+          ))}
         </ul>
       </div>
       {activeExtras.length > 0 && (
