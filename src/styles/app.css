@@ -933,6 +933,7 @@ a {
 }
 
 .drinkCard {
+  min-width: 0;
   min-height: 210px;
   border: 1px solid #e1e2e8;
   border-radius: 8px;
@@ -995,10 +996,11 @@ a {
 
 .drinkStepper {
   display: grid;
-  grid-template-columns: 32px 30px 32px;
+  grid-template-columns: 32px 26px 32px;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
+  width: 100%;
 }
 
 .drinkStepper button {
@@ -2838,6 +2840,16 @@ select {
     padding: 12px;
   }
 
+  .drinkCarouselShell {
+    grid-template-columns: 36px minmax(0, 1fr) 36px;
+    gap: 8px;
+  }
+
+  .drinkArrow {
+    width: 34px;
+    height: 34px;
+  }
+
   .drinkGroupTitle {
     gap: 12px;
     margin-bottom: 10px;
@@ -2861,17 +2873,17 @@ select {
   }
 
   .drinkCards {
-    gap: 10px;
+    gap: 8px;
   }
 
   .drinkCard {
     min-height: 160px;
-    padding: 10px 8px;
+    padding: 10px 6px;
     gap: 6px;
   }
 
   .drinkCard img {
-    max-width: 92px;
+    max-width: min(88px, 100%);
   }
 
   .drinkCard strong {
@@ -2882,6 +2894,16 @@ select {
     width: 18px;
     height: 18px;
     margin-top: 0;
+  }
+
+  .drinkStepper {
+    grid-template-columns: 28px 22px 28px;
+    gap: 3px;
+  }
+
+  .drinkStepper button {
+    width: 28px;
+    height: 28px;
   }
 
   .inlineNotice {
@@ -3336,16 +3358,41 @@ select {
   }
 
   .drinkGroup {
-    padding: 14px;
+    padding: 14px 10px;
+  }
+
+  .drinkCarouselShell {
+    grid-template-columns: 34px minmax(0, 1fr) 34px;
+    gap: 6px;
+  }
+
+  .drinkArrow {
+    width: 34px;
+    height: 34px;
   }
 
   .drinkCards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    gap: 8px;
   }
 
   .drinkCard {
     min-height: 172px;
+    padding: 10px 6px;
+  }
+
+  .drinkCard img {
+    max-width: min(88px, 100%);
+  }
+
+  .drinkStepper {
+    grid-template-columns: 28px 22px 28px;
+    gap: 3px;
+  }
+
+  .drinkStepper button {
+    width: 28px;
+    height: 28px;
   }
 
   .inlineNotice {
