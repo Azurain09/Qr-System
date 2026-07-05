@@ -131,7 +131,7 @@ export function StaffManagement({ onMessage }) {
         </div>
         <div className="userTableWrap">
           <table className="userTable">
-            <thead><tr><th>Usuario</th><th>DNI</th><th>Acceso</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <thead><tr><th>Usuario</th><th>DNI</th><th>ID de usuario</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
             <tbody>
               {filteredUsers.map((user) => (
                 <tr key={user.id}>
