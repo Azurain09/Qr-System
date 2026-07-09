@@ -95,8 +95,8 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ kind, name }),
     }),
-  report: (slug, date) => request(`/reports/${slug}/daily${date ? `?date=${date}` : ""}`),
-  dashboardReport: (slug, date) => request(`/reports/${slug}/dashboard${date ? `?date=${date}` : ""}`),
+  report: (slug, date, filters = {}) => request(`/reports/${slug}/daily${reportQuery(date, filters)}`),
+  dashboardReport: (slug, date, filters = {}) => request(`/reports/${slug}/dashboard${reportQuery(date, filters)}`),
   staff: () => request(`/manager/${SLUGS.manager}/staff`),
   createStaff: (payload) => request(`/manager/${SLUGS.manager}/staff`, { method: "POST", body: JSON.stringify(payload) }),
   updateStaff: (id, payload) =>
@@ -108,10 +108,21 @@ export const api = {
     }),
 };
 
-export function excelUrl(slug, date) {
+function reportQuery(date, filters = {}) {
+  const params = new URLSearchParams();
+  if (date) params.set("date", date);
+  if (filters.period) params.set("period", filters.period);
+  if (filters.consumptionType) params.set("consumption_type", filters.consumptionType);
+  const query = params.toString();
+  return query ? `?${query}` : "";
+}
+
+export function excelUrl(slug, date, filters = {}) {
   const role = slug === SLUGS.manager ? "manager" : "reception";
   const params = new URLSearchParams();
   if (date) params.set("date", date);
+  if (filters.period) params.set("period", filters.period);
+  if (filters.consumptionType) params.set("consumption_type", filters.consumptionType);
   const token = getStaffToken(role);
   if (token) params.set("token", token);
   const query = params.toString();

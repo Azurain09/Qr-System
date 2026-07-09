@@ -25,7 +25,7 @@ export function StaffDashboard({ report }) {
         <PiePanel
           title="Pedidos por categoría"
           data={report.category_mix || {}}
-          description="Distribución de pedidos y adicionales agrupados por categoría para identificar qué tipo de producto tiene mayor demanda."
+          description="Distribución de desayunos de cortesía y adicionales agrupados por categoría para identificar qué tipo de consumo tiene mayor demanda."
         />
         <GroupedBars
           title="Pedidos por estado"
@@ -35,7 +35,7 @@ export function StaffDashboard({ report }) {
         <LinePanel
           title="Pedidos por hora"
           data={report.orders_by_hour || {}}
-          description="Cantidad de pedidos registrados a lo largo del día según el horario en que fueron realizados."
+          description="Cantidad de pedidos registrados según el horario en que fueron realizados dentro del periodo seleccionado."
         />
         <RankTable title="Productos más solicitados" columns={["#", "Producto", "Cantidad"]} rows={(report.top_products || []).map((item, index) => [index + 1, displayName(item.name), item.quantity])} />
         <RankTable title="Mesas más activas" columns={["#", "Mesa", "Pedidos"]} rows={(report.active_tables || []).map((item, index) => [index + 1, item.name, item.orders])} />
@@ -47,7 +47,7 @@ export function StaffDashboard({ report }) {
 export function DailySnapshot({ report }) {
   return (
     <section className="dailySnapshot">
-      <h2>Resumen del día seleccionado</h2>
+      <h2>Resumen del periodo seleccionado</h2>
       <div className="reportGrid compactReport">
         <Metric title="Pedidos" value={report.total_orders} />
         <Chart title="Origen" data={report.attended_by_origin} />
@@ -90,9 +90,9 @@ function PiePanel({ title, data, description }) {
       <div className="pieWrap">
         <div className="pieChart" style={{ background: `conic-gradient(${gradient})` }} />
         <div className="pieLegend">
-          {entries.map(([label, value], index) => (
+          {entries.length ? entries.map(([label, value], index) => (
             <span key={label}><i style={{ background: colors[index % colors.length] }} /> {displayName(label)} <b>{Math.round((value / total) * 100)}%</b></span>
-          ))}
+          )) : <span className="muted">Sin datos para el filtro seleccionado</span>}
         </div>
       </div>
     </article>
@@ -159,6 +159,7 @@ function LinePanel({ title, data, description }) {
             <span>{point.label}</span>
           </div>
         ))}
+        {!points.length && <p className="muted chartEmpty">Sin datos para el filtro seleccionado</p>}
       </div>
     </article>
   );
