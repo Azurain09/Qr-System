@@ -1559,6 +1559,239 @@ select {
   color: var(--green);
 }
 
+.staffLinksPage {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(255, 152, 21, 0.11), transparent 320px),
+    linear-gradient(180deg, #fbfbfd 0%, #f4f2f8 100%);
+  color: #160b35;
+}
+
+.staffLinksTopbar {
+  min-height: 92px;
+  padding: 16px min(7vw, 84px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  background: linear-gradient(90deg, #08001f, #17003c 62%, #13002d);
+  color: #fff;
+  box-shadow: 0 16px 34px rgba(8, 0, 31, 0.2);
+}
+
+.staffLinksTopbar h1 {
+  margin: 4px 0;
+  font-size: clamp(28px, 4vw, 46px);
+  line-height: 1;
+}
+
+.staffLinksTopbar p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-weight: 700;
+}
+
+.staffLinksTopbar img {
+  width: min(238px, 34vw);
+  max-height: 64px;
+  object-fit: contain;
+}
+
+.staffLinksEyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #ffb347;
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.staffLinksCard {
+  width: min(760px, calc(100% - 36px));
+  margin: clamp(32px, 7vh, 72px) auto 0;
+  padding: 24px;
+  border: 1px solid #e4dfee;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 22px 56px rgba(31, 14, 74, 0.12);
+}
+
+.staffLinksIntro {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #eeeaf5;
+}
+
+.staffLinksIntro > span {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: #ff8600;
+  background: #fff3df;
+  flex: 0 0 auto;
+}
+
+.staffLinksIntro h2 {
+  margin: 0 0 4px;
+  font-size: clamp(24px, 3vw, 32px);
+}
+
+.staffLinksIntro p {
+  margin: 0;
+  color: #656179;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.staffAccessList {
+  display: grid;
+  gap: 12px;
+}
+
+.staffAccessGroup {
+  border: 1px solid #e5e0ef;
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.staffAccessGroup summary {
+  min-height: 76px;
+  padding: 14px 16px;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.staffAccessGroup summary::-webkit-details-marker {
+  display: none;
+}
+
+.staffAccessGroup summary::after {
+  content: "⌄";
+  grid-column: 3;
+  color: #ff8600;
+  font-size: 20px;
+  font-weight: 900;
+  transition: transform 0.18s ease;
+}
+
+.staffAccessGroup[open] summary::after {
+  transform: rotate(180deg);
+}
+
+.staffAccessGroup summary > span {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: #5b1fd1;
+  background: #f0e8ff;
+}
+
+.staffAccessGroup strong {
+  color: #160b35;
+  font-weight: 900;
+}
+
+.staffAccessGroup small {
+  display: block;
+  margin-top: 3px;
+  color: #656179;
+  font-weight: 700;
+}
+
+.staffAccessLinks {
+  display: grid;
+  gap: 10px;
+  padding: 0 16px 16px;
+}
+
+.staffAccessButton {
+  min-height: 64px;
+  padding: 12px;
+  border: 1px solid #eee5d9;
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) 22px;
+  align-items: center;
+  gap: 12px;
+  color: #160b35;
+  text-decoration: none;
+  background: linear-gradient(180deg, #fff, #fffaf4);
+  transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.staffAccessButton > span {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: #ff8600;
+}
+
+.staffAccessButton:hover {
+  border-color: #ff8600;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(255, 134, 0, 0.13);
+}
+
+@media (max-width: 620px) {
+  .staffLinksTopbar {
+    min-height: 76px;
+    padding: 12px 18px;
+  }
+
+  .staffLinksTopbar p,
+  .staffLinksEyebrow {
+    display: none;
+  }
+
+  .staffLinksTopbar img {
+    width: 150px;
+  }
+
+  .staffLinksCard {
+    width: calc(100% - 24px);
+    margin-top: 22px;
+    padding: 16px;
+  }
+
+  .staffLinksIntro {
+    align-items: flex-start;
+  }
+
+  .staffAccessGroup summary {
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    padding: 12px;
+  }
+
+  .staffAccessGroup summary > span {
+    width: 36px;
+    height: 36px;
+  }
+
+  .staffAccessLinks {
+    padding: 0 12px 12px;
+  }
+
+  .staffAccessButton {
+    grid-template-columns: 34px minmax(0, 1fr) 18px;
+  }
+}
+
 .dashboard {
   min-height: 100vh;
   padding: 0;
