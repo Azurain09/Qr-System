@@ -4,12 +4,8 @@
     description: "El huésped solicitó cancelar el pedido verbalmente.",
   },
   {
-    title: "Cambios de planes",
-    description: "Mis planes han cambiado y ya no necesito el pedido.",
-  },
-  {
-    title: "Otro motivo",
-    description: "Otro motivo no listado.",
+    title: "Razón operativa",
+    description: "El pedido no puede atenderse por una condición operativa.",
   },
 ];
 
