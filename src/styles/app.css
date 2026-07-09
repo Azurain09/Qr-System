@@ -1822,14 +1822,14 @@ select {
 }
 
 .staffIntro {
-  margin-top: 20px;
-  margin-bottom: 14px;
+  margin-top: 14px;
+  margin-bottom: 8px;
 }
 
 .staffIntro h1 {
   margin: 0;
   color: #160b35;
-  font-size: 30px;
+  font-size: 28px;
 }
 
 .staffIntro p {
@@ -1847,7 +1847,8 @@ select {
   flex-wrap: wrap;
   align-items: end;
   gap: 14px;
-  padding: 6px 0 4px;
+  padding: 2px 0 2px;
+  margin-bottom: 12px;
 }
 
 .reportDashboard .statCard {
@@ -2331,13 +2332,13 @@ select {
 
 .staffDashboard {
   display: grid;
-  gap: 16px;
+  gap: 12px;
 }
 
 .statCards {
   display: grid;
   grid-template-columns: repeat(4, minmax(180px, 1fr));
-  gap: 14px;
+  gap: 12px;
 }
 
 .statCard,
@@ -2349,16 +2350,16 @@ select {
 }
 
 .statCard {
-  min-height: 126px;
-  padding: 18px 20px;
+  min-height: 96px;
+  padding: 14px 16px;
   display: flex;
   align-items: center;
   gap: 14px;
 }
 
 .statCard > span {
-  width: 48px;
-  height: 48px;
+  width: 42px;
+  height: 42px;
   border-radius: 10px;
   display: grid;
   place-items: center;
@@ -2366,8 +2367,8 @@ select {
 }
 
 .statCard svg {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
 }
 
 .statCard.purple > span {
@@ -2398,28 +2399,29 @@ select {
 .statCard p {
   margin: 0 0 6px;
   color: #232040;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 900;
 }
 
 .statCard strong {
   display: block;
   color: #13072e;
-  font-size: 30px;
+  font-size: 28px;
   line-height: 1;
 }
 
 .statCard small {
   display: block;
-  margin-top: 12px;
+  margin-top: 7px;
   color: #59606f;
   font-weight: 800;
+  font-size: 11px;
 }
 
 .staffCharts {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 16px;
+  gap: 12px;
   align-items: stretch;
 }
 
@@ -2436,36 +2438,36 @@ select {
 }
 
 .staffPanelCard {
-  min-height: 260px;
-  padding: 18px;
+  min-height: 218px;
+  padding: 14px;
   display: flex;
   flex-direction: column;
 }
 
 .staffPanelCard h2,
 .dailySnapshot h2 {
-  margin: 0 0 16px;
+  margin: 0 0 10px;
   color: #181138;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .pieWrap {
   display: grid;
-  grid-template-columns: 150px 1fr;
+  grid-template-columns: 128px 1fr;
   align-items: center;
-  gap: 18px;
+  gap: 14px;
   flex: 1;
 }
 
 .pieChart {
-  width: 150px;
-  height: 150px;
+  width: 128px;
+  height: 128px;
   border-radius: 999px;
 }
 
 .pieLegend {
   display: grid;
-  gap: 12px;
+  gap: 8px;
 }
 
 .pieLegend span,
@@ -2474,7 +2476,7 @@ select {
   align-items: center;
   gap: 8px;
   color: #37324f;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
 }
 
@@ -2492,8 +2494,8 @@ select {
 .groupLegend {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
-  margin-bottom: 14px;
+  gap: 12px;
+  margin-bottom: 8px;
 }
 
 .greenDot,
@@ -2520,7 +2522,7 @@ select {
 }
 
 .barAxis {
-  height: 145px;
+  height: 118px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -2532,7 +2534,7 @@ select {
 }
 
 .groupedBars {
-  height: 180px;
+  height: 148px;
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 12px;
@@ -2546,7 +2548,7 @@ select {
 }
 
 .groupedBar div {
-  height: 145px;
+  height: 118px;
   display: flex;
   justify-content: center;
   align-items: end;
@@ -2568,7 +2570,7 @@ select {
 }
 
 .lineChart {
-  height: 202px;
+  height: 158px;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(46px, 1fr));
   gap: 10px;
@@ -2581,18 +2583,18 @@ select {
 .lineChartConnected {
   position: relative;
   display: block;
-  min-height: 180px;
+  min-height: 148px;
   margin-top: auto;
   padding: 0 0 24px;
   overflow: hidden;
 }
 
 .chartDescription {
-  margin: -4px 0 12px;
+  margin: -2px 0 8px;
   color: #656179;
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.4;
-  min-height: 34px;
+  min-height: 30px;
 }
 
 .chartEmpty {
@@ -2657,12 +2659,12 @@ select {
 .rankTable table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .rankTable th,
 .rankTable td {
-  padding: 10px 6px;
+  padding: 7px 6px;
   border-bottom: 1px solid #efedf4;
   text-align: left;
 }
@@ -2678,8 +2680,8 @@ select {
 }
 
 .dailySnapshot {
-  margin-top: 16px;
-  margin-bottom: 16px;
+  margin-top: 8px;
+  margin-bottom: 10px;
   text-align: center;
 }
 
