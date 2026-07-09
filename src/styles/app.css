@@ -1611,10 +1611,14 @@ select {
 
 .reportDashboard .reportToolbar {
   justify-content: center;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 14px;
+  padding: 6px 0 4px;
 }
 
 .reportDashboard .statCard {
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .dashboardHeader {
@@ -2078,10 +2082,12 @@ select {
 
 .reportToolbar .field {
   margin: 0;
+  min-width: 150px;
 }
 
 .linkButton {
   width: auto;
+  min-width: 104px;
 }
 
 .reportGrid {
@@ -2097,7 +2103,7 @@ select {
 
 .statCards {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
   gap: 14px;
 }
 
@@ -2110,10 +2116,10 @@ select {
 }
 
 .statCard {
-  min-height: 134px;
-  padding: 18px;
+  min-height: 126px;
+  padding: 18px 20px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 14px;
 }
 
@@ -2159,7 +2165,7 @@ select {
 .statCard p {
   margin: 0 0 6px;
   color: #232040;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 900;
 }
 
@@ -2181,6 +2187,7 @@ select {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 16px;
+  align-items: stretch;
 }
 
 .staffCharts > .staffPanelCard {
@@ -2198,6 +2205,8 @@ select {
 .staffPanelCard {
   min-height: 260px;
   padding: 18px;
+  display: flex;
+  flex-direction: column;
 }
 
 .staffPanelCard h2,
@@ -2212,6 +2221,7 @@ select {
   grid-template-columns: 150px 1fr;
   align-items: center;
   gap: 18px;
+  flex: 1;
 }
 
 .pieChart {
@@ -2273,6 +2283,7 @@ select {
   grid-template-columns: 28px minmax(0, 1fr);
   gap: 8px;
   align-items: end;
+  margin-top: auto;
 }
 
 .barAxis {
@@ -2337,6 +2348,8 @@ select {
 .lineChartConnected {
   position: relative;
   display: block;
+  min-height: 180px;
+  margin-top: auto;
   padding: 0 0 24px;
   overflow: hidden;
 }
@@ -2346,6 +2359,14 @@ select {
   color: #656179;
   font-size: 12px;
   line-height: 1.4;
+  min-height: 34px;
+}
+
+.chartEmpty {
+  display: grid;
+  height: 100%;
+  place-items: center;
+  text-align: center;
 }
 
 .lineChartPath {
