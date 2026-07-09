@@ -142,7 +142,7 @@ export function KitchenPanel() {
           </aside>
           <div className="cancelReasonPanel">
             <h2>¿Por qué desea cancelar este pedido?</h2>
-            <p>Selecciona el motivo que mejor describe tu cancelación.</p>
+            <p>Seleccione el motivo que mejor describe la cancelación.</p>
             <div className="cancelReasons">
               {CANCELLATION_REASONS.map((reason) => (
                 <button key={reason.title} className={cancelReason === reason.title ? "selected" : ""} onClick={() => setCancelReason(reason.title)}>
@@ -156,7 +156,7 @@ export function KitchenPanel() {
             </div>
             <div className="cancelWarning">
               <Info size={19} />
-              <span>Tu pedido será cancelado y se notificará al huésped en su pantalla.</span>
+              <span>El pedido será cancelado y se notificará al huésped en su pantalla.</span>
             </div>
             <div className="cancelActions">
               <button className="secondary" onClick={() => { setCancellingOrder(null); setCancelReason(""); }}>
