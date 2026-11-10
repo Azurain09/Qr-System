@@ -2,6 +2,12 @@
 
 Web application for managing hotel breakfast orders through QR access. Guests can submit an order, while kitchen, reception, and management teams use separate authenticated views for operations and reporting.
 
+## Preview
+
+<img src="screenshots/kitchen-access.png" alt="QR System protected kitchen access screen" width="900" />
+
+The screenshot uses no credentials or customer data. It shows the protected entry point for the kitchen workflow.
+
 ## Highlights
 
 - Guest QR ordering experience for breakfast and extras.
